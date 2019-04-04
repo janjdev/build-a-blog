@@ -8,6 +8,10 @@ app.config['DEBUG'] =True
 def index():
     return render_template('index.html', title='Home')
 
+@app.route('/index.html')
+def home():
+    return render_template('index.html', title='Home')
+
 @app.route('/blog.html')
 def blog():
     return render_template('blog.html', title="Blog")
