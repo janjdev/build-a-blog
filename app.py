@@ -145,8 +145,8 @@ def index():
     # for t in terms:
     #     html += '<li>' +str(t) + '</li>'
     # html += '</ul>'
-    return render_template('index.html')
+    return render_template('dashboard.html')
 
 if (__name__) == '__main__':
-    db.create_all()
+    # db.create_all()
     app.run()
