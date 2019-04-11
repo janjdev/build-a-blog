@@ -113,7 +113,6 @@ class Term_Relationship(db.Model):
         self.post_id = post_id
         self.term_taxonomy_id = term_taxonomy_id
 
-# def insert_taxonomy_terms(*args, **kwargs):
 event.listen(Term.__table__, 'after_create', DDL(""" INSERT INTO term (id, name, slug) VALUE (1, 'Blog Post', 'blog-post'), (2, 'Event Post', 'event-post'), (3, 'Page', 'page'), (4, 'Post Tag', 'post-tag') """))
 event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__taxonomy (id, taxonomy, term_id)  VALUE (1, 'category', 1), (2, 'category', 2), (3, 'category', 3), (4, 'tag', 4) """))
 
@@ -141,12 +140,12 @@ event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__
 
 @app.route('/')
 def index():
-    terms = db.session.query(Term.name).all()
-    html = '<ul>'
-    for t in terms:
-        html += '<li>' +str(t) + '</li>'
-    html += '</ul>'
-    return html
+    # terms = db.session.query(Term.name).all()
+    # html = '<ul>'
+    # for t in terms:
+    #     html += '<li>' +str(t) + '</li>'
+    # html += '</ul>'
+    return render_template('index.html')
 
 if (__name__) == '__main__':
     db.create_all()
