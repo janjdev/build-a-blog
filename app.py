@@ -139,14 +139,39 @@ event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__
 #     db.session.commit()
 
 @app.route('/')
-def index():
-    # terms = db.session.query(Term.name).all()
-    # html = '<ul>'
-    # for t in terms:
-    #     html += '<li>' +str(t) + '</li>'
-    # html += '</ul>'
-    return render_template('dashboard.html')
+def home():
+    return render_template('index.html', title='Home')
+
+@app.route('/login')
+def login():
+    return render_template('index.html', title='Home')
+
+@app.route('/register')
+def register():
+    return
+
+@app.route('/logout')
+def logout():
+    return
+
+@app.route('/blog.html')
+def blog():
+    return render_template('blog.html', title="Blog")
+
+@app.route('/post/<int:post_id>')
+def show_post(post_id):
+    return
+
+@app.route('/admin')
+def admin():
+    if 'user' in session:
+        return
+@app.route('admin/posts')
+def make_posts():
+    if 'user' in session:
+        new_post=Post(title, author, content, date, categorey, tags, post_type)
+        return
 
 if (__name__) == '__main__':
-    # db.create_all()
+    db.create_all()
     app.run()
