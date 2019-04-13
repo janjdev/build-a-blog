@@ -58,10 +58,11 @@ class Post(db.Model):
     title = db.Column(db.String(255), nullable=False)
     date_created = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     author_id = db.Column(db.Integer, db.ForeignKey('blog__user.id'), nullable=False)
-    author = db.Column(db.String(255))
+    #author = db.Column(db.String(255))
     content = db.Column(db.Text, nullable=False)
     post_status = db.Column(db.String(10), nullable=False, default='draft')
     post_type = db.Column(db.String(100))
+    post_mime_type = db.Column(db.String(100))
     slug = db.Column(db.String(255), nullable=False)
     published_post = db.relationship('Published_Post', backref='post', lazy=True)
     term_relationships = db.relationship('Term_Relationship', backref="post", lazy=True)
@@ -70,7 +71,7 @@ class Post(db.Model):
     def __init__(self, title, content):
         self.title = title 
         self.author_id = get_author_id()
-        self.author = get_author()
+        #self.author = get_author()
         self.content = content
         self.slug = slugify(title)
 
@@ -113,8 +114,8 @@ class Term_Relationship(db.Model):
         self.post_id = post_id
         self.term_taxonomy_id = term_taxonomy_id
 
-event.listen(Term.__table__, 'after_create', DDL(""" INSERT INTO term (id, name, slug) VALUE (1, 'Blog Post', 'blog-post'), (2, 'Event Post', 'event-post'), (3, 'Page', 'page'), (4, 'Post Tag', 'post-tag') """))
-event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__taxonomy (id, taxonomy, term_id)  VALUE (1, 'category', 1), (2, 'category', 2), (3, 'category', 3), (4, 'tag', 4) """))
+event.listen(Term.__table__, 'after_create', DDL(""" INSERT INTO term (id, name, slug) VALUE (1, 'Blog Post', 'blog-post'), (2, 'Event Post', 'event-post'), (3, 'Page', 'page'), (4, 'Post Tag', 'post-tag'), (5, 'Attachment', 'attachment') """))
+event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__taxonomy (id, taxonomy, term_id)  VALUE (1, 'category', 1), (2, 'category', 2), (3, 'category', 3), (4, 'tag', 4), (5, 'category', 5) """))
 
 # @app.before_first_request
 # def setup():
@@ -148,5 +149,5 @@ def index():
     return render_template('index.html')
 
 if (__name__) == '__main__':
-    # db.create_all()
+    db.create_all()
     app.run()
