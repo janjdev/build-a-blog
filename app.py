@@ -145,7 +145,7 @@ def index():
     # for t in terms:
     #     html += '<li>' +str(t) + '</li>'
     # html += '</ul>'
-    return render_template('dashboard.html')
+    return render_template('index.html')
 
 if (__name__) == '__main__':
     # db.create_all()
