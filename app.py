@@ -143,8 +143,8 @@ class Term_Relationship(db.Model):
         self.post_id = post_id
         self.term_taxonomy_id = term_taxonomy_id
 
-event.listen(Term.__table__, 'after_create', DDL(""" INSERT INTO term (id, name, slug) VALUE (1, 'Blog Post', 'blog-post'), (2, 'Event Post', 'event-post'), (3, 'Page', 'page'), (4, 'Post Tag', 'post-tag'), (5, 'Attachment', 'attachment') """))
-event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__taxonomy (id, taxonomy, term_id)  VALUE (1, 'category', 1), (2, 'category', 2), (3, 'category', 3), (4, 'tag', 4), (5, 'category', 5) """))
+event.listen(Term.__table__, 'after_create', DDL(""" INSERT INTO term (id, name, slug) VALUE (1, 'Blog Post', 'blog-post'), (2, 'Event Post', 'event-post'), (3, 'Page', 'page'), (4, 'Post Tag', 'post-tag'), (5, 'Attachment', 'attachment'), (5, 'Slide', 'slide') """))
+event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__taxonomy (id, taxonomy, term_id)  VALUE (1, 'category', 1), (2, 'category', 2), (3, 'category', 3), (4, 'tag', 4), (5, 'category', 5), (6, 'category', 6) """))
 
 # @app.before_first_request
 # def setup():
@@ -168,10 +168,9 @@ event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__
 #     db.session.flush()
 #     db.session.commit()
 
-<<<<<<< HEAD
 @app.route('/')
 def home():
-    return render_template('index.html', title='Home')
+    return render_template('site/index.html', title='Home')
 
 @app.route('/login')
 def login():
@@ -197,27 +196,12 @@ def show_post(post_id):
 def admin():
     if 'user' in session:
         return
-@app.route('admin/posts')
+@app.route('/admin/posts')
 def make_posts():
     if 'user' in session:
         new_post=Post(title, author, content, date, categorey, tags, post_type)
         return
 
 if (__name__) == '__main__':
-    db.create_all()
-=======
-@app.route('/admin')
-def index():
-    
-    return render_template('/admin/auth/login.html')
-
-    # terms = db.session.query(Term.name).all()
-    # html = '<ul>'
-    # for t in terms:
-    #     html += '<li>' +str(t) + '</li>'
-    # html += '</ul>'
-
-if (__name__) == '__main__':
     #db.create_all()
->>>>>>> restructure
     app.run()
