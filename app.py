@@ -4,14 +4,20 @@ from sqlalchemy import event, DDL
 from sqlalchemy.event import listen
 from datetime import datetime
 import pymysql
+from hashutils import make_pw_hash, check_pw_hash
 from slugify import slugify
+import os
+import magic
+
+ 
+
 
 app = Flask(__name__)
 app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
 app.config["CACHE_TYPE"] = "null"
 app.config['DEBUG'] =True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/lc1012019'
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = True 
 db = SQLAlchemy(app)
 
 #Create function to get default values from other columns when needed
@@ -35,6 +41,11 @@ def get_author(self):
 def get_publisher(self):
     return session.get('user').first_name + ' ' + session.get('user').last_name
 
+def get_mime_type(media):
+#get media file from the form input
+    mime = magic.Magic(mime=True)
+    return mime.from_file(media)
+      
 
 class Blog_User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -44,14 +55,32 @@ class Blog_User(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     password = db.Column(db.String(140), nullable=False)
     posts = db.relationship('Post', backref='blog_user', lazy=True)
+    roles = db.relationship('Role', secondary='user_roles')
   
-    
     def __init__(self, email, password, first_name, last_name, username=''):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = password
+        self.password = make_pw_hash(password)
         self.username = create_username(username)
+
+class Role(db.Model):
+    __tablename__ = 'roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    name = db.Column(db.String(50), unique=True)
+
+
+class UserRoles(db.Model):
+    __tablename__ = 'user_roles'
+    id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('blog_user.id', ondelete='CASCADE'))
+    role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
+
+class Log(db.Model):
+    __tablename__ = 'logs'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, ForeignKey('blog_user.id', ondelete='CASCADE'))
+    login = db.Column(db.Date, nullable=False, default=datetime.utcnow)
 
 class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -73,10 +102,12 @@ class Post(db.Model):
         self.author_id = get_author_id()
         #self.author = get_author()
         self.content = content
+        self.post_type = post_type
+        self.post_mime_type = get_mime_type()
         self.slug = slugify(title)
 
     
-
+ 
 
 class Published_Post(db.Model):
     post_id = db.Column(db.Integer, db.ForeignKey('post.id'),  primary_key=True, nullable=False)
@@ -146,7 +177,7 @@ def index():
     # for t in terms:
     #     html += '<li>' +str(t) + '</li>'
     # html += '</ul>'
-    return render_template('index.html')
+    return render_template('/admin/login.html')
 
 if (__name__) == '__main__':
     db.create_all()
