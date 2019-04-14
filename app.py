@@ -10,10 +10,6 @@ import os
 from mimetypes import MimeTypes
 from urllib import request
 
-
- 
-
-
 app = Flask(__name__)
 app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
 app.config["CACHE_TYPE"] = "null"
