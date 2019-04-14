@@ -7,7 +7,9 @@ import pymysql
 from hashutils import make_pw_hash, check_pw_hash
 from slugify import slugify
 import os
-import magic
+from mimetypes import MimeTypes
+from urllib import request
+
 
  
 
@@ -43,8 +45,8 @@ def get_publisher(self):
 
 def get_mime_type(media):
 #get media file from the form input
-    mime = magic.Magic(mime=True)
-    return mime.from_file(media)
+    url = urllib.pathname2url('media[0]')
+    return MimeTypes.guess_type(url)
       
 
 class Blog_User(db.Model):
@@ -73,13 +75,13 @@ class Role(db.Model):
 class UserRoles(db.Model):
     __tablename__ = 'user_roles'
     id = db.Column(db.Integer(), primary_key=True)
-    user_id = db.Column(db.Integer(), db.ForeignKey('blog_user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer(), db.ForeignKey('blog__user.id', ondelete='CASCADE'))
     role_id = db.Column(db.Integer(), db.ForeignKey('roles.id', ondelete='CASCADE'))
 
 class Log(db.Model):
     __tablename__ = 'logs'
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, ForeignKey('blog_user.id', ondelete='CASCADE'))
+    user_id = db.Column(db.Integer, db.ForeignKey('blog__user.id', ondelete='CASCADE'))
     login = db.Column(db.Date, nullable=False, default=datetime.utcnow)
 
 class Post(db.Model):
@@ -170,15 +172,17 @@ event.listen(Term_Taxonomy.__table__, 'after_create', DDL(""" INSERT INTO term__
 #     db.session.flush()
 #     db.session.commit()
 
-@app.route('/')
+@app.route('/admin')
 def index():
+    
+    return render_template('/admin/auth/login.html')
+
     # terms = db.session.query(Term.name).all()
     # html = '<ul>'
     # for t in terms:
     #     html += '<li>' +str(t) + '</li>'
     # html += '</ul>'
-    return render_template('/admin/login.html')
 
 if (__name__) == '__main__':
-    db.create_all()
+    #db.create_all()
     app.run()
