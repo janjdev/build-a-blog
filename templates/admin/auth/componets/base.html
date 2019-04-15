@@ -54,28 +54,32 @@
   </noscript>
   <!-- End Google Tag Manager (noscript) -->
   <!-- Navbar -->
-{% include 'admin/auth/auth_nav.html' %}
+{% include 'admin/auth/componets/auth_nav.html' %}
 
 {% block content %}
 {% endblock %}
 
 
  <!--   Core JS Files   -->
-  <script src="{{url_for('static', filename='admin/assets/shared/js/core/jquery.min.js')}}"></script>
-  <script src="{{url_for('static', filename='admin/assets/shared/js/core/popper.min.js')}}"></script>
-  <script src="{{url_for('static', filename='admin/assets/shared/js/core/bootstrap-material-design.min.js')}}"></script>
+ <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+ <script src="https://unpkg.com/popper.js@1.12.6/dist/umd/popper.js" integrity="sha384-fA23ZRQ3G/J53mElWqVJEGJzU0sTs+SvzG8fXVWP+kJQ1lwFAOkcUOysnlKJC33U" crossorigin="anonymous"></script>
+ <script src="https://unpkg.com/bootstrap-material-design@4.1.1/dist/js/bootstrap-material-design.js" integrity="sha384-CauSuKpEqAFajSpkdjv3z9t8E7RlpJ1UP0lKM/+NdtSarroVKu069AlsRPKkFBz9" crossorigin="anonymous"></script>
+ 
   <script src="{{url_for('static', filename='admin/assets/shared/js/plugins/perfect-scrollbar.jquery.min.js')}}"></script>
  <!--  Google Maps Plugin    -->
-  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script>
+  <!-- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script> -->
  <!-- Place this tag in your head or just before your close body tag. -->
-  <script async defer src="https://buttons.github.io/buttons.js"></script>
  <!-- Chartist JS -->
-  <script src="{{url_for('static', filename='admin/assets/shared/js/plugins/chartist.min.js')}}"></script>
+  <!-- <script src="{{url_for('static', filename='admin/assets/shared/js/plugins/chartist.min.js')}}"></script> -->
+  <!-- Sweet Alert Plugin-->
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@8.8.5/dist/sweetalert2.all.min.js"></script>
  <!--  Notifications Plugin    -->
   <script src="{{url_for('static', filename='admin/assets/shared/js/plugins/bootstrap-notify.js')}}"></script>
  <!-- Control Center for Material Dashboard: parallax effects, scripts for the example pages etc -->
   <script src="{{url_for('static', filename='admin/assets/shared/js/material-dashboard.min.js')}}" type="text/javascript"></script>
- <!-- Material Dashboard DEMO methods, don't include it in your project! -->
+ <!-- Custom js files for login animations and ajax -->
   <script src="{{url_for('static', filename='admin/assets/auth/js/actions.js')}}"></script> 
+  <script src="{{url_for('static', filename='admin/assets/auth/js/ajax.js')}}"></script> 
+
 </body>
 </html>

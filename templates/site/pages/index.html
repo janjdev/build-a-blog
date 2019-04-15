@@ -1,96 +1,14 @@
-{% extends "site/base.html" %}
+{% extends "site/pages/base.html" %}
 
 {% block content %}
-		<aside id="colorlib-hero">
-			<div class="flexslider">
-				<ul class="slides">
-			   	<li style="background-image: url(images/img_bg_1.jpg);">
-			   		<div class="overlay"></div>
-			   		<div class="container">
-			   			<div class="row">
-				   			<div class="col-md-6 col-md-pull-3 col-sm-12 col-xs-12 col-md-offset-3 slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-				   						<p class="meta">
-												<span class="cat"><a href="#">Events</a></span>
-												<span class="date">20 March 2018</span>
-												<span class="pos">By <a href="#">Rich</a></span>
-											</p>
-					   					<h1>How a website designer began customizing and designing</h1>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			   	<li style="background-image: url(images/img_bg_2.jpg);">
-			   		<div class="overlay"></div>
-			   		<div class="container">
-			   			<div class="row">
-				   			<div class="col-md-6 col-md-pull-3 col-sm-12 col-xs-12 col-md-offset-3 slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-				   						<p class="meta">
-												<span class="cat"><a href="#">Events</a></span>
-												<span class="date">20 March 2018</span>
-												<span class="pos">By <a href="#">Rich</a></span>
-											</p>
-					   					<h1>How a website designer began customizing and designing</h1>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			   	<li style="background-image: url(images/img_bg_3.jpg);">
-			   		<div class="overlay"></div>
-			   		<div class="container">
-			   			<div class="row">
-				   			<div class="col-md-6 col-md-pull-3 col-sm-12 col-xs-12 col-md-offset-3 slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-				   						<p class="meta">
-												<span class="cat"><a href="#">Events</a></span>
-												<span class="date">20 March 2018</span>
-												<span class="pos">By <a href="#">Rich</a></span>
-											</p>
-					   					<h1>How a website designer began customizing and designing</h1>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			   	<li style="background-image: url(images/img_bg_4.jpg);">
-			   		<div class="overlay"></div>
-			   		<div class="container">
-			   			<div class="row">
-				   			<div class="col-md-6 col-md-pull-3 col-sm-12 col-xs-12 col-md-offset-3 slider-text">
-				   				<div class="slider-text-inner">
-				   					<div class="desc">
-				   						<p class="meta">
-												<span class="cat"><a href="#">Events</a></span>
-												<span class="date">20 March 2018</span>
-												<span class="pos">By <a href="#">Rich</a></span>
-											</p>
-					   					<h1>Top 5 Places To Start Your Vacation This Summer</h1>
-				   					</div>
-				   				</div>
-				   			</div>
-				   		</div>
-			   		</div>
-			   	</li>
-			  	</ul>
-		  	</div>
-		</aside>
-
+	{% include 'site/componets/post-slider.html' %}
 		<div id="colorlib-container">
 			<div class="container">
 				<div class="row row-pb-md">
 					<div class="col-md-4">
 						<div class="blog-entry">
 							<div class="blog-img">
-								<a href="blog.html"><img src="images/blog-1.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+								<a href="/blog.html"><img src="images/blog-1.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
 							</div>
 							<div class="desc">
 								<p class="meta">
@@ -98,7 +16,7 @@
 									<span class="date">20 March 2018</span>
 									<span class="pos">By <a href="#">Rich</a></span>
 								</p>
-								<h2><a href="blog.html">Recipe for your site</a></h2>
+								<h2><a href="/blog.html">Recipe for your site</a></h2>
 								<p>A small river named Duden flows by their place and supplies it with the necessary </p>
 							</div>
 						</div>
@@ -106,7 +24,7 @@
 					<div class="col-md-4">
 						<div class="blog-entry">
 							<div class="blog-img">
-								<a href="blog.html"><img src="images/blog-2.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+								<a href="/blog.html"><img src="images/blog-2.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
 							</div>
 							<div class="desc">
 								<p class="meta">
@@ -314,18 +232,11 @@
 						</div>
 					</div>
 				</div>
-				<div class="row">
-					<div class="col-md-12 text-center">
-						<ul class="pagination">
-							<li class="disabled"><a href="#">&laquo;</a></li>
-							<li class="active"><a href="#">1</a></li>
-							<li><a href="#">2</a></li>
-							<li><a href="#">3</a></li>
-							<li><a href="#">4</a></li>
-							<li><a href="#">&raquo;</a></li>
-						</ul>
-					</div>
-				</div>
-			</div>
-		</div>
+				<!--Insert Pagination-->
+				{% if post  %}
+					{% include  %}
+				{% endif 'site/componets/pagination.html' %}
+				
+			</div><!--End Container-->
+		</div><!--End Colorlib-Container-->
 {% endblock %}

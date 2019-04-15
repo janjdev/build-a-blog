@@ -1,23 +1,23 @@
-{% extends 'admin/auth/base.html' %}
+{% extends 'admin/auth/componets/base.html' %}
 {% block content %}
     <div class="wrapper wrapper-full-page">
-    <div class="page-header login-page header-filter" filter-color="black" style="background-image: url('{{url_for('static', filename='admin/assets/img/login.jpg')}}'); background-size: cover; background-position: top center;">
+    <div class="page-header login-page header-filter" filter-color="black" data-color="{{ filter_color }}" style="background-image: url('{{url_for('static', filename='admin/assets/img/login.jpg')}}'); background-size: cover; background-position: top center;">
       <!--   you can change the color of the filter page using: data-color="blue | purple | green | orange | red | rose " -->
       <div class="container">
         <div class="row">
           <div class="col-lg-4 col-md-6 col-sm-8 ml-auto mr-auto">
-            <form class="form" method="" action="">
+            <form id="login" class="form" method="post" action="/login">
               <div class="card card-login card-hidden">
                 <div class="card-header card-header-rose text-center">
                   <h4 class="card-title">Login</h4>
                   <div class="social-line">
-                    <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                    <a href="#" class="btn btn-just-icon btn-link btn-white">
                       <i class="fa fa-facebook-square"></i>
                     </a>
-                    <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                    <a href="#" class="btn btn-just-icon btn-link btn-white">
                       <i class="fa fa-twitter"></i>
                     </a>
-                    <a href="#pablo" class="btn btn-just-icon btn-link btn-white">
+                    <a href="#" class="btn btn-just-icon btn-link btn-white">
                       <i class="fa fa-google-plus"></i>
                     </a>
                   </div>
@@ -31,7 +31,7 @@
                           <i class="material-icons">email</i>
                         </span>
                       </div>
-                      <input type="email" class="form-control" placeholder="Email...">
+                      <input type="email" name="email" class="form-control" placeholder="Email..." required="true">
                     </div>
                   </span>
                   <span class="bmd-form-group">
@@ -41,12 +41,12 @@
                           <i class="material-icons">lock_outline</i>
                         </span>
                       </div>
-                      <input type="password" class="form-control" placeholder="Password...">
+                      <input type="password" name="password" class="form-control" placeholder="Password..." required="true">
                     </div>
                   </span>
                 </div>
                 <div class="card-footer justify-content-center">
-                  <a href="#pablo" class="btn btn-rose btn-link btn-lg">Lets Go</a>
+                  <input type="submit" class="btn btn-rose btn-link btn-lg" form="login" value="Lets Go"/>
                 </div>
               </div>
             </form>
@@ -54,7 +54,7 @@
         </div>
       </div>
      <!--Insert Footer Here-->
-     {% include 'admin/auth/auth_footer.html' %}
+     {% include 'admin/auth/componets/auth_footer.html' %}
     </div> <!--End Page Header-->
   </div><!--End Page wrapper-->
   {% endblock %}
