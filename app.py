@@ -1,12 +1,11 @@
-from flask import Flask, request, redirect, render_template, session, escape, url_for, flash, jsonify
+from flask import Flask, request, redirect, render_template, session, escape, url_for, flash, jsonify, json
 from flask_sqlalchemy import SQLAlchemy
 from sqlalchemy import event, DDL
 from sqlalchemy.event import listen
 from datetime import datetime
-import pymysql
+import os, pymysql, jsonpickle 
 from hashutils import make_pw_hash, check_pw_hash
 from slugify import slugify
-import os
 from mimetypes import MimeTypes
 # from urllib import request
 
@@ -24,11 +23,11 @@ def same_as(column_name):
         return context.get_current_parameters()[column_name]
     return default_function
 
-def create_username(username):
+def create_username(username, first_name, last_name):
     if username != '':
         return username
     else:
-        return slugify(session.get('user').first_name +' ' + session.get('user').last_name)
+        return slugify(first_name + last_name)
 
 def get_author_id(self):
     return session.get('user').id
@@ -50,17 +49,17 @@ class Blog_User(db.Model):
     first_name = db.Column(db.String(255), nullable=False)
     last_name = db.Column(db.String(255), nullable=False)
     username = db.Column(db.String(255), nullable=False)
-    email = db.Column(db.String(100), unique=True, nullable=False)
-    password = db.Column(db.String(140), nullable=False)
+    email = db.Column(db.String(255), unique=True, nullable=False)
+    password = db.Column(db.String(255), nullable=False)
     posts = db.relationship('Post', backref='blog_user', lazy=True)
     role = db.relationship('UserRoles', backref='user_roles')
   
-    def __init__(self, email, password, first_name, last_name, username=''):
+    def __init__(self, email, password, first_name, last_name, username):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
         self.password = make_pw_hash(password)
-        self.username = create_username(username)
+        self.username = create_username(username, first_name, last_name)
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -208,14 +207,19 @@ def show_post(post_id):
 
 @app.route('/admin')
 def admin():
-    if 'user' in session:
-        return render_template('/admin/dash/dash.html')
+    if 'authenticated' in session:
+        auth_user = Blog_User.query.filter_by(id=session.get('id')).first()
+        active_user = jsonpickle.encode(auth_user, unpicklable=False, max_depth=2)
+        user = jsonpickle.decode( active_user)
+        session['user'] = user
+        name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
+        return render_template('/admin/dash/pages/dash.html', name=name )
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if 'authenticated' in session:
-        return jsonify({'success': 1})
+        redirect(url_for('admin'))
     else:
         if request.method == 'POST':
             email = request.form['email']
@@ -225,21 +229,47 @@ def login():
                 if user:
                     if check_pw_hash(password, user.password):
                         session['authenticated'] = True
-                        session['user'] = user
-                        return jsonify({'success': 2, 'message': '', 'alertType': 'success'})
+                        session['id'] = user.id
+                        return jsonify({'message': 'Hello ' + user.first_name, 'alertType': 'success', 'callback': 'goToAdmin', 'timer': 2000})
                     else: 
-                        return jsonify({'error': 1, 'message': 'Invalid email or password', 'alertType': 'error' })
+                        return jsonify({'callback': 'clearPassFields', 'message': 'Invalid email or password', 'alertType': 'error', 'timer': 5000 })
                 else:
-                    return jsonify({'error': 2, 'message': 'That user does not exist. Please, register.', 'alertType': 'error' })
+                    return jsonify({'callback': 'goToRegister', 'message': 'That user does not exist. Please, register.', 'alertType': 'error', 'timer': 3500 })
             else:
-                return jsonify({'error': 3, 'message': 'Email and password are required.', 'alertType': 'error'})
-        filterColor = 'purple' 
-        return render_template('admin/auth/pages/login.html', reg_link="/register", log_link="/login", lock_link="/lock", filter_color = filterColor)
+                return jsonify({'callback': '', 'message': 'Email and password are required.', 'alertType': 'error', 'timer': 2500})
+    filterColor = 'rose' 
+    return render_template('admin/auth/pages/login.html', reg_link="/register", log_link="/login", lock_link="/lock", log_active='active', filter_color = filterColor)
 
 
-@app.route('/register')
+@app.route('/register', methods=['POST', 'GET'])
 def register():
-    return render_template('admin/auth/pages/register.html')
+    if 'authenticated' in session:
+        return jsonify({'status': 'success', 'message': 'You\'re already registered. Please, log out to change users.', 'alertType': 'info', 'callback': 'goToAdmin', 'timer': 4500})
+    else:
+        if request.method == 'POST':
+            fname = request.form['fname']
+            lname = request.form['lname']
+            username = request.form['username']
+            email = request.form['email']
+            conemail = request.form['confirm-email']
+            passwrd = request.form['pass']
+            conpass = request.form['confirm-pass']
+            if email == conemail:
+                current_user = Blog_User.query.filter_by(email=email).first()
+                if current_user:
+                    return jsonify({'status': 'error', 'messaage': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 15000})
+                elif passwrd == conpass:
+                    new_user = Blog_User(first_name=fname, last_name=lname, username=username, email=email, password=passwrd)
+                    db.session.add(new_user)
+                    db.session.commit()
+                    # session['authenticated'] = True
+                    # session['id'] = new_user.id
+                    return jsonify({'status': 'success', 'message': 'You\'re in!', 'alertType': 'success', 'callback': 'goToLogin', 'timer': 2000})
+                else:
+                    return jsonify({'status': 'error', 'message': 'passwords do not match', 'alertType': 'error', 'callback': 'clearPassFields', 'timer': 3500})
+            else:
+                return jsonify({'status': 'error', 'message': 'emails do not match', 'alertType': 'error', 'callback': 'clearEmailFields', 'timer': 3500})
+    return render_template('admin/auth/pages/register.html', reg_link="/register", log_link="/login", lock_link="/lock", reg_active='active', filter_color = 'rose')
 
 @app.route("/lock")
 def lock():
@@ -247,7 +277,9 @@ def lock():
 
 @app.route('/logout')
 def logout():
-    return
+    session.pop('id', None)
+    session.pop('authenticated', None)
+    return redirect(url_for('login'))
 
 @app.route('/admin/dash/add_post')
 def make_posts():
