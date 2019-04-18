@@ -1,5 +1,5 @@
 from flask import Flask, request, redirect, render_template, session, escape, url_for, flash, jsonify, json
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import SQLAlchemy, Pagination
 from sqlalchemy import event, DDL
 from sqlalchemy.event import listen
 from datetime import datetime
@@ -60,6 +60,13 @@ class Blog_User(db.Model):
         self.email = email
         self.password = make_pw_hash(password)
         self.username = create_username(username, first_name, last_name)
+
+class User_Meta(db.Model):
+    __tablename__ = 'usermeta'
+    meta_id = db.Column(db.Integer(), primary_key=True)
+    user_id = db.Column(db.Integer(), db.ForeignKey('blog__user.id', ondelete='CASCADE'))
+    meta_key = db.Column(db.String(50), unique=True, nullable=False)
+    meta_value = db.Column(db.Text, nullable=False)
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -195,26 +202,66 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 
 @app.route('/')
 def home():
-    return render_template('site/pages/index.html', title='Home')
+    posts = Post.query().limit(13).all()
+    #
+    postmeta = []
+    for post in posts:
+        img_url = Post_Meta.query.filter((Post_Meta.post_id == post.id) & (Post_Meta.meta_key == 'post_attachment')).first().meta_value
+        author_name = Blog_User.query.filter_by(id == post.author_id).first().first_name
+        author_name += ' ' +Blog_User.query.filter_by(id == post.author_id).first().last_name
+        postmeta.append({post.id: [img_url, author_name]})
+    return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta)
+
+@app.route('/<int:page_num>')
+def homeAll(page_num):
+    posts = Post.query().all().paginate(per_page=13, page=page_num, error_out=True)
+    postmeta = []
+    for post in posts:
+        img_url = Post_Meta.query.filter((Post_Meta.post_id == post.id) & (Post_Meta.meta_key == 'post_attachment')).first().meta_value
+        author_name = Blog_User.query.filter_by(id == post.author_id).first().first_name
+        author_name += ' ' +Blog_User.query.filter_by(id == post.author_id).first().last_name
+        postmeta.append({post.id: [img_url, author_name]})
+    return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta)
 
 @app.route('/blog.html')
 def blog():
+    posts = Post.query().all().paginate(per_page=13, page=1)
     return render_template('site/pages/blog.html', title="Blog")
 
 @app.route('/post/<int:post_id>')
 def show_post(post_id):
     return
 
-@app.route('/admin')
-def admin():
-    if 'authenticated' in session:
-        auth_user = Blog_User.query.filter_by(id=session.get('id')).first()
-        active_user = jsonpickle.encode(auth_user, unpicklable=False, max_depth=2)
-        user = jsonpickle.decode( active_user)
-        session['user'] = user
-        name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
-        return render_template('/admin/dash/pages/dash.html', name=name )
-    return redirect(url_for('login'))
+@app.route('/register', methods=['POST', 'GET'])
+def register():
+    if session.get('authenticated'):
+        return jsonify({'status': 'success', 'message': 'You\'re already registered. Please, log out to change users.', 'alertType': 'info', 'callback': 'goToAdmin', 'timer': 4500})
+    else:
+        if request.method == 'POST':
+            fname = request.form['fname']
+            lname = request.form['lname']
+            username = request.form['username']
+            email = request.form['email']
+            conemail = request.form['confirm-email']
+            passwrd = request.form['pass']
+            conpass = request.form['confirm-pass']
+            if email == conemail:
+                current_user = Blog_User.query.filter_by(email=email).first()
+                if current_user:
+                    return jsonify({'status': 'error', 'messaage': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 15000})
+                elif passwrd == conpass:
+                    new_user = Blog_User(first_name=fname, last_name=lname, username=username, email=email, password=passwrd)
+                    db.session.add(new_user)
+                    db.session.commit()
+                    session['authenticated'] = True
+                    session['id'] = new_user.id
+                    return jsonify({'status': 'success', 'message': 'You\'re in!', 'alertType': 'success', 'callback': 'goToAdmin', 'timer': 2000})
+                else:
+                    return jsonify({'status': 'error', 'message': 'passwords do not match', 'alertType': 'error', 'callback': 'clearPassFields', 'timer': 3500})
+            else:
+                return jsonify({'status': 'error', 'message': 'emails do not match', 'alertType': 'error', 'callback': 'clearEmailFields', 'timer': 3500})
+    return render_template('admin/auth/pages/register.html', reg_link="/register", log_link="/login", lock_link="/lock", reg_active='active', filter_color = 'rose')
+
 
 @app.route('/login', methods=['POST', 'GET'])
 def login():
@@ -241,51 +288,103 @@ def login():
     return render_template('admin/auth/pages/login.html', reg_link="/register", log_link="/login", lock_link="/lock", log_active='active', filter_color = filterColor)
 
 
-@app.route('/register', methods=['POST', 'GET'])
-def register():
-    if 'authenticated' in session:
-        return jsonify({'status': 'success', 'message': 'You\'re already registered. Please, log out to change users.', 'alertType': 'info', 'callback': 'goToAdmin', 'timer': 4500})
-    else:
-        if request.method == 'POST':
-            fname = request.form['fname']
-            lname = request.form['lname']
-            username = request.form['username']
-            email = request.form['email']
-            conemail = request.form['confirm-email']
-            passwrd = request.form['pass']
-            conpass = request.form['confirm-pass']
-            if email == conemail:
-                current_user = Blog_User.query.filter_by(email=email).first()
-                if current_user:
-                    return jsonify({'status': 'error', 'messaage': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 15000})
-                elif passwrd == conpass:
-                    new_user = Blog_User(first_name=fname, last_name=lname, username=username, email=email, password=passwrd)
-                    db.session.add(new_user)
-                    db.session.commit()
-                    # session['authenticated'] = True
-                    # session['id'] = new_user.id
-                    return jsonify({'status': 'success', 'message': 'You\'re in!', 'alertType': 'success', 'callback': 'goToLogin', 'timer': 2000})
-                else:
-                    return jsonify({'status': 'error', 'message': 'passwords do not match', 'alertType': 'error', 'callback': 'clearPassFields', 'timer': 3500})
-            else:
-                return jsonify({'status': 'error', 'message': 'emails do not match', 'alertType': 'error', 'callback': 'clearEmailFields', 'timer': 3500})
-    return render_template('admin/auth/pages/register.html', reg_link="/register", log_link="/login", lock_link="/lock", reg_active='active', filter_color = 'rose')
-
-@app.route("/lock")
+@app.route("/lock", methods=['POST', 'GET'])
 def lock():
+    if request.method == 'POST':
+        password = request.form['password']
+        if 'id' in session:
+            if check_pw_hash(password, user['password']):
+                session['authenticated'] = True
+                session.pop('locked', None)
+                return jsonify({'message': 'Welcome back, ' + session.get('user')['first_name'], 'callback': 'unlock', 'alertType': 'success', 'timer': 2500})
+            else:
+                return jsonify({})
+        else:
+            return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
+    session.pop('authenticated', None)
+    session['locked'] = True
     return render_template("admin/auth/pages/lock.html")
 
 @app.route('/logout')
 def logout():
+    session.pop('user', None)
     session.pop('id', None)
     session.pop('authenticated', None)
     return redirect(url_for('login'))
 
-@app.route('/admin/dash/add_post')
+@app.route('/admin')
+def admin():
+    if 'authenticated' in session:
+        auth_user = Blog_User.query.filter_by(id=session.get('id')).first()
+        active_user = jsonpickle.encode(auth_user, unpicklable=False, max_depth=2)
+        user = jsonpickle.decode( active_user)
+        session['user'] = user
+        name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard' )
+    return redirect(url_for('login'))
+
+
+@app.route('/add_post')
 def make_posts():
     if 'user' in session:
         #new_post=Post(title, author, content, date, categorey, tags, post_type)
         return
+
+@app.route('/profile/<int:user_id>', methods=['POST', 'GET'])
+def profile(user_id):
+    if 'authenticated' in session:
+        if user_id == session.get('user')['id']:
+            user = session.get('user')
+            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile')
+    return redirect(url_for('login'))
+
+@app.route('/updateProfile/<int:user_id>', methods=['POST', 'GET'])
+def updateProfile(user_id):
+    if request.method == 'POST':
+        if 'authenticated' in session:
+            if user_id == session.get('user')['id']:
+                update = Blog_User.query.filter_by(id = user_id).first()
+                # updatemeta = User_Meta.query.filter_by(user_id = user_id).first()
+                #Get  and update username
+                if request.form['username'] != '':
+                    update.username = request.form['username']
+                # else:
+                #     update.username = session.get('user')['username']
+                
+                 #Get  and update email
+                if request.form['email'] != '':
+                    update.email = request.form['email']
+                # else: 
+                #     update.email = session.get('user')['email']
+                
+                 #Get  and update first name
+                if request.form['fname'] != '':
+                    update.first_name = request.form['fname']
+                # else:
+                #     update.first_name = session.get('user')['first_name']
+                    
+                 #Get  and update last name
+                if request.form['lname'] != '':
+                    update.last_name = request.form['lname']
+                # else:
+                #     update.last_name = session.get('user')['last_name']
+
+                 #Get  and update user bio
+                # if request.form['bio'] != '':
+                #     updatemeta.user_bio = request.form['bio']
+                # else: 
+                #     updatemeta.user_bio = updatemeta.user_bio
+
+                #commit updates to the database
+                # db.session.add(update.username)
+                db.session.commit()
+                updated = Blog_User.query.filter_by(id = user_id).first()
+                active_user = jsonpickle.encode(updated, unpicklable=False, max_depth=2)
+                user = jsonpickle.decode( active_user)
+                session['user'] = user
+                return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadProfile'})
+
+    return redirect(url_for('profile', user_id = user_id))
 
 
 

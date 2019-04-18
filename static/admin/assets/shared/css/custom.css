@@ -4,3 +4,19 @@
     width: inherit;
     overflow: visible;
 }
+
+.bmd-form-group .bmd-label-floating.label-position{
+    top: -15px !important;
+}
+.bmd-form-group.is-focused .bmd-label-floating.label-position, .form-group.bmd-form-group.is-filled .bmd-label-floating.label-position{
+    top: -30px !important;
+}
+
+.form-btn-position{
+    position: relative;
+    margin-bottom: 9px;
+}
+.form-btn-position .btn{
+position: absolute;
+bottom: 0;
+}

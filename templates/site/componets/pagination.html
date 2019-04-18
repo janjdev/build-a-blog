@@ -1,12 +1,27 @@
 <div class="row">
     <div class="col-md-12 text-center">
-        <ul class="pagination">
-            <li class="disabled"><a href="#">&laquo;</a></li>
-            <li class="active"><a href="#">1</a></li>
-            <li><a href="#">2</a></li>
-            <li><a href="#">3</a></li>
-            <li><a href="#">4</a></li>
-            <li><a href="#">&raquo;</a></li>
-        </ul>
+        {% if posts.iter_pages %}
+            <ul class="pagination">
+                {% if not posts.has_prev %}
+                    {% set  pre = 'disabled'%}
+                {% endif %}
+                <li class="{{pre}}"><a href="{{'/' + posts.prev_num }}">&laquo;</a></li>
+                {% for page in posts.iter_pages %}
+                    {% if page %}
+                        {% if page = posts.page %}
+                            {% set state ='active' %}
+                            {% else %}
+                            {% set state='' %}
+                        {% endif %}
+                        <li class="{{state}}"><a href="{{ '/' + page }}">{{page}}</a></li>
+                        {% else %}
+                        ...
+                    {% endif %}
+                {% endfor %}
+            {% if not posts.has_next %}
+                {% set next='disabled' %}
+            {% endif %}
+            <li class="{{ next }}"><a href="{{'/' + page+1}}">&raquo;</a></li>
+        {% endif %}  
     </div>
 </div>

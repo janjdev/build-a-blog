@@ -1,0 +1,76 @@
+<div class="row row-pb-md">
+					<div class="col-md-4">
+						<div class="blog-entry">
+							<div class="blog-img">
+								<a href="/blog.html"><img src="images/blog-1.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+							</div>
+							<div class="desc">
+								<p class="meta">
+									<span class="cat"><a href="#">Events</a></span>
+									<span class="date">20 March 2018</span>
+									<span class="pos">By <a href="#">Rich</a></span>
+								</p>
+								<h2><a href="/blog.html">Recipe for your site</a></h2>
+								<p>A small river named Duden flows by their place and supplies it with the necessary </p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="blog-entry">
+							<div class="blog-img">
+								<a href="/blog.html"><img src="images/blog-2.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+							</div>
+							<div class="desc">
+								<p class="meta">
+									<span class="cat"><a href="#">Read</a></span>
+									<span class="date">20 March 2018</span>
+									<span class="pos">By <a href="#">Rich</a></span>
+								</p>
+								<h2><a href="blog.html">Recipe for your site</a></h2>
+								<p>A small river named Duden flows by their place and supplies it with the necessary </p>
+							</div>
+						</div>
+					</div>
+					<div class="col-md-4">
+						<div class="blog-entry">
+							<div class="blog-slider">
+								<div class="owl-carousel">
+									<div class="item">
+										<a href="blog.html" class="image-popup-link"><img src="images/blog-3.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+									</div>
+									<div class="item">
+										<a href="blog.html" class="image-popup-link"><img src="images/blog-4.jpg" class="img-responsive" alt="html5 bootstrap template"></a>
+									</div>
+								</div>
+							</div>
+							<div class="desc">
+								<p class="meta">
+									<span class="cat"><a href="#">Travel</a></span>
+									<span class="date">20 March 2018</span>
+									<span class="pos">By <a href="#">Rich</a></span>
+								</p>
+								<h2><a href="blog.html">Recipe for your site</a></h2>
+								<p>A small river named Duden flows by their place and supplies it with the necessary </p>
+							</div>
+						</div>
+					</div>
+                </div>
+                
+
+
+      <!-- <li class="nav-item dropdown">
+                <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="material-icons">notifications</i>
+                  <span class="notification">5</span>
+                  <p class="d-lg-none d-md-block">
+                    Some Actions
+                  </p>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbarDropdownMenuLink">
+                  <a class="dropdown-item" href="#">Mike John responded to your email</a>
+                  <a class="dropdown-item" href="#">You have 5 new tasks</a>
+                  <a class="dropdown-item" href="#">You're now friend with Andrew</a>
+                  <a class="dropdown-item" href="#">Another Notification</a>
+                  <a class="dropdown-item" href="#">Another One</a>
+                </div>
+              </li> -->
