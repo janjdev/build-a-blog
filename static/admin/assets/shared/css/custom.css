@@ -4,7 +4,13 @@
     width: inherit;
     overflow: visible;
 }
-
+#currentStatusBody th i {
+    color: white;
+    padding: 5px;
+}
+#currentStatusBody .table>thead>tr>th{
+    padding: 0;
+}
 .bmd-form-group .bmd-label-floating.label-position{
     top: -15px !important;
 }
@@ -20,3 +26,120 @@
 position: absolute;
 bottom: 0;
 }
+
+.navbar .collapse .navbar-nav .nav-item .nav-link{
+    color: #9c27b0;
+}
+
+.material-icons.rotate{
+    transform: rotate(180deg);
+}
+
+.dash-cards .card-header{
+    border-bottom: solid thin #ddd;
+    padding-bottom: 10px;
+}
+
+.dash-cards i.material-icons, .dash-cards i.material-icons-sharp, .dash-cards i.material-icons-outlined{
+    font-size: 30px;
+}
+.latest-posts-view .panel-icon i{
+    font-size: 48px;
+}
+
+.newsFeed .card-icon .svg {
+    width: 60px;
+}
+
+hr.seperator {
+    width: 55px;
+    margin-left: 43px;
+    transform: rotate(90deg);
+    position: absolute;
+    top: 15px;
+    height: 1.5px;
+}
+
+h4.navbar {
+    padding-left: 20px;
+    font-weight: 600;
+    color: white;
+    background-color: #ff9800 !important;
+}
+
+.dash-cards td {
+    border: none;
+}
+
+.form-group span.input-group-text {
+    display: inline;
+    padding: 0 15px;
+}
+
+.form-group div.typeSelection {
+    display: inline-block;
+}
+
+.card .card-header.card-header-text {
+    display: inline-block;
+    position: relative;
+}
+.fileinput-preview.fileinput-exists.thumbnail.img-raised {
+    max-width: 70%;
+    margin: 10px;
+}
+
+#quickPostSubmit i, #quickAddSubmit i {
+    font-size: 24px;
+}
+.quickPost_attachment_inputbtns {
+    display: inline-flex;
+    color: #fff;
+}
+
+.bootstrap-tagsinput{
+    display: block;
+}
+
+button#quickPostSubmit, button#quickAddSubmit {
+    padding: 0;
+    float: right;
+    top: 10px;
+}
+
+.dash-cards h4.card-title {
+    display: inline-block;
+}
+
+div#quickPostAttachment {
+    display: inherit;
+}
+
+#quickAdd .fileinput.text-center.fileinput-exists, form#quickAdd .fileinput.fileinput-new.text-center {
+    width: 100%;
+}
+
+#quickPostAttachment p {
+    font-size: small;
+    margin-bottom: 0;
+}
+
+.newsFeed .card-icon .svg{
+    filter: invert(1) sepia(0) saturate(5) hue-rotate(0deg);
+}
+
+@media screen and (min-width: 768px){
+    .latest-posts {
+        margin-left: 78px;
+    }
+    .latest-posts .col-md-4 {
+        top: -90px;
+    }
+
+}
+
+/*Reverse Gradients*/
+.purple-gradient-reverse {
+    background: -webkit-linear-gradient(50deg, #7873f5, #ff6ec4 ) !important;
+    background: -o-linear-gradient(50deg, #7873f5, #ff6ec4 ) !important;
+    background: linear-gradient(40deg, #7873f5, #ff6ec4 ) !important; }

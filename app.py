@@ -3,11 +3,14 @@ from flask_sqlalchemy import SQLAlchemy, Pagination
 from sqlalchemy import event, DDL
 from sqlalchemy.event import listen
 from datetime import datetime
-import os, pymysql, jsonpickle 
+import os, pymysql, jsonpickle, io
 from hashutils import make_pw_hash, check_pw_hash
 from slugify import slugify
 from mimetypes import MimeTypes
-# from urllib import request
+from werkzeug.utils import secure_filename
+#from urllib import request
+
+
 
 app = Flask(__name__)
 app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
@@ -15,6 +18,10 @@ app.config["CACHE_TYPE"] = "null"
 app.config['DEBUG'] =True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/lc1012019'
 app.config['SQLALCHEMY_ECHO'] = True 
+app.config['SITE_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/site/uploads'
+app.config['ADMIN_UPLOADS'] = "D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/admin/uploads"    
+app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG', 'GIF']
+app.config['DATA_FILES'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/'
 db = SQLAlchemy(app)
 
 #Create function to get default values from other columns when needed
@@ -22,6 +29,10 @@ def same_as(column_name):
     def default_function(context):
         return context.get_current_parameters()[column_name]
     return default_function
+
+def allowed_image(mime):
+    if mime not in app.config['ALLOWED_IMAGE_EXTENSIONS']:
+        return False    
 
 def create_username(username, first_name, last_name):
     if username != '':
@@ -42,7 +53,11 @@ def get_mime_type(media):
 #get media file from the form input
     url = urllib.pathname2url('media[0]')
     return MimeTypes.guess_type(url)
-      
+
+#Get Json File
+def getJSON(file):
+    with io.open(file, 'r', encoding='utf-8', errors='ignore') as fp:
+        return json.load(fp, strict=False)
 
 class Blog_User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -200,6 +215,16 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 #     db.session.flush()
 #     db.session.commit()
 
+# @app.context_processor 
+# def get_feeds():
+#     if request.method == 'POST':
+#         if request.json:
+#             feed = request.json
+#             return dict('feed', feed  )
+#     return None
+
+
+
 @app.route('/')
 def home():
     posts = Post.query().limit(13).all()
@@ -248,7 +273,7 @@ def register():
             if email == conemail:
                 current_user = Blog_User.query.filter_by(email=email).first()
                 if current_user:
-                    return jsonify({'status': 'error', 'messaage': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 15000})
+                    return jsonify({'status': 'error', 'message': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 3000})
                 elif passwrd == conpass:
                     new_user = Blog_User(first_name=fname, last_name=lname, username=username, email=email, password=passwrd)
                     db.session.add(new_user)
@@ -303,7 +328,7 @@ def lock():
             return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
     session.pop('authenticated', None)
     session['locked'] = True
-    return render_template("admin/auth/pages/lock.html")
+    return render_template("admin/auth/pages/lock.html", lock_active='active', user=session.get('user'))
 
 @app.route('/logout')
 def logout():
@@ -312,7 +337,7 @@ def logout():
     session.pop('authenticated', None)
     return redirect(url_for('login'))
 
-@app.route('/admin')
+@app.route('/admin', methods=['POST', 'GET'])
 def admin():
     if 'authenticated' in session:
         auth_user = Blog_User.query.filter_by(id=session.get('id')).first()
@@ -320,7 +345,8 @@ def admin():
         user = jsonpickle.decode( active_user)
         session['user'] = user
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
-        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard' )
+        feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed)
     return redirect(url_for('login'))
 
 
@@ -335,8 +361,8 @@ def profile(user_id):
     if 'authenticated' in session:
         if user_id == session.get('user')['id']:
             user = session.get('user')
-            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile')
-    return redirect(url_for('login'))
+            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'))
+    return redirect(url_for('login')) , print(app.config['DATA_FILES'])
 
 @app.route('/updateProfile/<int:user_id>', methods=['POST', 'GET'])
 def updateProfile(user_id):
@@ -345,38 +371,45 @@ def updateProfile(user_id):
             if user_id == session.get('user')['id']:
                 update = Blog_User.query.filter_by(id = user_id).first()
                 # updatemeta = User_Meta.query.filter_by(user_id = user_id).first()
+                
                 #Get  and update username
                 if request.form['username'] != '':
                     update.username = request.form['username']
-                # else:
-                #     update.username = session.get('user')['username']
                 
                  #Get  and update email
                 if request.form['email'] != '':
                     update.email = request.form['email']
-                # else: 
-                #     update.email = session.get('user')['email']
                 
                  #Get  and update first name
                 if request.form['fname'] != '':
                     update.first_name = request.form['fname']
-                # else:
-                #     update.first_name = session.get('user')['first_name']
                     
                  #Get  and update last name
                 if request.form['lname'] != '':
                     update.last_name = request.form['lname']
-                # else:
-                #     update.last_name = session.get('user')['last_name']
 
                  #Get  and update user bio
                 # if request.form['bio'] != '':
                 #     updatemeta.user_bio = request.form['bio']
-                # else: 
-                #     updatemeta.user_bio = updatemeta.user_bio
+                 
+
+                if request.files:
+                    avatar  = request.files['file']
+                    if avatar.filename == '':
+                        return jsonify({'message': 'Image must have a name.', 'alertType': 'error', 'callback': '', 'timer': 2500})
+                    filename = secure_filename(avatar.filename)
+                    avatar.save(os.path.join(app.config['ADMIN_UPLOADS'], filename))
+                    session['avatar'] = url_for('uploaded_file', filename = filename)
+                    #if updatemeta:
+                        #updatemeta.meta_vale = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename) where meta_key == avatar
+                        #else: 
+                            #User_meta.meta_key = avatar
+                            #User_meta.meta_value == avatar.url
+                            #session.add()
+                        
+                     
 
                 #commit updates to the database
-                # db.session.add(update.username)
                 db.session.commit()
                 updated = Blog_User.query.filter_by(id = user_id).first()
                 active_user = jsonpickle.encode(updated, unpicklable=False, max_depth=2)

@@ -1,3 +1,21 @@
+// const pyUrl = 'https://www.googleapis.com/blogger/v3/blogs/8520/posts?key=AIzaSyC3N7-adc4BJmHPek_dZAClL_50ouKTbH4';
+// $.ajax({
+//     url:pyUrl,
+//     type: 'GET',
+//     contentType: "appplication/json",       
+// }).done(function(resp){
+//     console.log(resp);
+//     $.ajax({
+//         url: '/admin',
+//         type: 'POST',
+//         contentType: "appplication/json",
+//         data: '../../../../../data/data.json',
+//     }).done(function(response){
+//         console.log(response);
+//     });
+// // });
+
+
 $(document).ready(function() {
 //To update userProfiles
     const form = document.querySelector('form#updateProfile');
@@ -26,6 +44,8 @@ $(document).ready(function() {
             ajaxforms('/updateProfile/' + id, 'POST', form);           
         }
     });
+
+//Common functions  
 
     function ajaxforms(url, type, form){
         $.ajax({

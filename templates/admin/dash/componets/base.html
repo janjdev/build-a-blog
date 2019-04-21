@@ -49,7 +49,7 @@
  <!--  Full Calendar Plugin, full documentation here: https://github.com/fullcalendar/fullcalendar    -->
  <script src="{{ url_for('static', filename='admin/assets/shared/js/plugins/fullcalendar.min.js')}}"></script>
  <!-- Vector Map plugin, full documentation here: http://jvectormap.com/documentation/ -->
- <script src="{{ url_for('static', filename='admin/assets/shared/js/plugins/jquery-jvectormap.js')}}"></script>
+ 
  <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
  <script src="{{ url_for('static', filename='admin/assets/shared/js/plugins/nouislider.min.js')}}"></script>
  <!-- Include a polyfill for ES6 Promises (optional) for IE11, UC Browser and Android browser support SweetAlert -->
@@ -57,7 +57,7 @@
  <!-- Library for adding dinamically elements -->
  <script src="{{ url_for('static', filename='admin/assets/shared/js/plugins/arrive.min.js')}}"></script>
  <!--  Google Maps Plugin    -->
- <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyB2Yno10-YTnLjjn_Vtk0V8cdcY5lC4plU"></script>
+ 
  <!-- Place this tag in your head or just before your close body tag. -->
  <!-- Chartist JS -->
  <script src="{{ url_for('static', filename='admin/assets/shared/js/plugins/chartist.min.js')}}"></script>
@@ -70,74 +70,6 @@
  <!-- Custom JS-->
  <script src="{{url_for('static', filename='admin/assets/dash/js/actions.js')}}"></script>
  <script src="{{url_for('static', filename='admin/assets/dash/js/ajax.js')}}"></script>
- <script>
-        $(document).ready(function() {
-          $().ready(function() {
-            $sidebar = $('.sidebar');
-
-            $sidebar_img_container = $sidebar.find('.sidebar-background');
-
-            $full_page = $('.full-page');
-
-            $sidebar_responsive = $('body > .navbar-collapse');
-
-            window_width = $(window).width();
-
-            fixed_plugin_open = $('.sidebar .sidebar-wrapper .nav li.active a p').html();
-
-            if (window_width > 767 && fixed_plugin_open == 'Dashboard') {
-              if ($('.fixed-plugin .dropdown').hasClass('show-dropdown')) {
-                $('.fixed-plugin .dropdown').addClass('open');
-              }
-
-            }
-            $('.switch-sidebar-mini input').change(function() {
-              $body = $('body');
-
-              $input = $(this);
-
-              if (md.misc.sidebar_mini_active == true) {
-                $('body').removeClass('sidebar-mini');
-                md.misc.sidebar_mini_active = false;
-
-                $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar();
-
-              } else {
-
-                $('.sidebar .sidebar-wrapper, .main-panel').perfectScrollbar('destroy');
-
-                setTimeout(function() {
-                  $('body').addClass('sidebar-mini');
-
-                  md.misc.sidebar_mini_active = true;
-                }, 300);
-              }
-
-              // we simulate the window Resize so the charts will get updated in realtime.
-              var simulateWindowResize = setInterval(function() {
-                window.dispatchEvent(new Event('resize'));
-              }, 180);
-
-              // we stop the simulation of Window Resize after the animations are completed
-              setTimeout(function() {
-                clearInterval(simulateWindowResize);
-              }, 1000);
-
-            });
-          });
-        });
-      </script>
-      <!-- Sharrre libray -->         
-      <script>
-        $(document).ready(function() {
-          // Javascript method's body can be found in assets/js/demos.js
-          md.initDashboardPageCharts();
-
-          md.initVectorMap();
-
-        });
-      </script>
-
 </body>
 </html>
 {% endblock base %}
