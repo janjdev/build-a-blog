@@ -1,5 +1,6 @@
 .vscode/
-<<<<<<< HEAD
+static/admin/uploads
+static/site/uploads
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
@@ -101,6 +102,3 @@ ENV/
 
 # mypy
 .mypy_cache/
-=======
-  __pycache__/
->>>>>>> restructure
