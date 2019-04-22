@@ -15,7 +15,7 @@
   <div class="sidebar-wrapper">
     <div class="user">
       <div class="photo">
-        <img src="{{ url_for('static', filename='admin/assets/shared/img/faces/avatar.jpg')}}" />
+        <img src="{{avatar}}" />
       </div>
       <div class="user-info">
         <a data-toggle="collapse" href="#collapseExample" class="username">
@@ -26,13 +26,13 @@
         </a>
         <div class="collapse" id="collapseExample">
           <ul class="nav">
-            <li class="nav-item">
+            <li class="nav-item {{ profile_active}}">
               <a class="nav-link" href="{{url_for('profile', user_id = user['id'])}}">
                   <i class="material-icons">account_box</i>
                 <span class="sidebar-normal"> My Profile </span>
               </a>
             </li>
-            <li class="nav-item">
+            <li class="nav-item {{ mr_active}}">
               <a class="nav-link" href="#">
                   <i class="material-icons">assignment_ind</i>
                 <span class="sidebar-normal"> Manage Roles </span>
@@ -49,8 +49,8 @@
       </div>
     </div>
     <ul class="nav">
-      <li class="nav-item active ">
-        <a class="nav-link" href="">
+      <li class="nav-item {{ dash_active}} ">
+        <a class="nav-link" href="{{url_for('admin')}}">
           <i class="material-icons">dashboard</i>
           <p> Dashboard </p>
         </a>
@@ -64,13 +64,13 @@
         </a>
         <div class="collapse" id="pagesExamples">
           <ul class="nav">
-            <li class="nav-item ">
+            <li class="nav-item {{ post_active}}">
               <a class="nav-link" href="">
                 <i class="material-icons">note</i>
                 <span class="sidebar-normal"> Blog Posts </span>
               </a>
             </li>
-            <li class="nav-item ">
+            <li class="nav-item {{event_active}}">
               <a class="nav-link" href="">
                 <i class="material-icons">event</i>
                 <span class="sidebar-normal">Event Posts </span>
@@ -79,26 +79,26 @@
           </ul>
         </div>
       </li>
-      <li class="nav-item ">
+      <li class="nav-item {{ pages_active}}">
         <a class="nav-link" data-toggle="collapse" href="#componentsExamples">
           <i class="material-icons">library_books</i>
           <p> Pages </p>
         </a>
       </li>
-      <li class="nav-item ">
+      <li class="nav-item {{ media_active}}">
           <a class="nav-link" data-toggle="collapse" href="#tablesExamples">
             <i class="material-icons">perm_media</i>
             <p> Media </p>
           </a>
         </li>
-      <li class="nav-item ">
+      <li class="nav-item {{ tags_active}}">
         <a class="nav-link" data-toggle="collapse" href="#formsExamples">
           <i class="material-icons">style</i>
           <p> Tags
           </p>
         </a>
       </li>
-      <li class="nav-item ">
+      <li class="nav-item {{ categ_active}}">
         <a class="nav-link" data-toggle="collapse" href="#tablesExamples">
           <i class="material-icons">category</i>
           <p> Categories

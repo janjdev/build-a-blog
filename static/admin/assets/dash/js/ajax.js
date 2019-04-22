@@ -17,11 +17,11 @@
 
 
 $(document).ready(function() {
-//To update userProfiles
-    const form = document.querySelector('form#updateProfile');
-    id = form.getAttribute('data-form-user')
-    $(form).on('submit', function(e){
+//To update userProfiles    
+   $('form#updateProfile').on('submit', function(e){
         e.preventDefault();
+        const form = $(this);
+        const id = form.attr('data-form-user')
         let fields = document.querySelectorAll('.editable');
         let Empty = true;
         let i = 0;
@@ -41,18 +41,39 @@ $(document).ready(function() {
             });
        }
         else{
-            ajaxforms('/updateProfile/' + id, 'POST', form);           
+            const data = form.serialize();
+            ajaxforms('/updateProfile/' + id, 'POST', data);           
         }
     });
 
-//Common functions  
 
-    function ajaxforms(url, type, form){
+// Update User Avatar
+$('#updateAvatar').on('submit', function(e){
+    e.preventDefault();
+    const form = new FormData($('#updateAvatar')[0]);    
+    const id = $(this).attr('data-form-user');
+    if ($(this).find('input[name="attachment"]')[0].value != ''){
+        ajaxforms('/update_avatar/' + id, 'POST', form, false, false)
+    }
+    else{
+        Swal.fire({
+            type: error,
+            text: 'your image must have a name',
+            timer: 2500,
+            onClose: $(this).reset
+          })
+    }
+});
+
+//Common functions
+    function ajaxforms(url, type, form, pData=True, cType=True){
         $.ajax({
           url: url,
           type: type,
-          data: $(form).serialize(),
+          data: form,
           cache: false,
+          processData: pData,
+          contentType: cType
         })
         .done(function(response){
             const callback = eval(response.callback)
@@ -67,6 +88,13 @@ $(document).ready(function() {
     
     function loadProfile(){
         $('#updateProfile').load(document.URL +  '  #profileContainer ');
+    }
+    function loadAvatar(){
+        $('#user-avatar').load(document.URL +  '  #avatar-card ');
+        $('#updateAvatar').load(document.URL +  '  #btnholder ');
+        $('input[name="attachment"]').val('');
+        $('.thumbnail').children().remove();
+
     }
 });
 

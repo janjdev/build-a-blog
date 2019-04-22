@@ -15,13 +15,15 @@ from werkzeug.utils import secure_filename
 app = Flask(__name__)
 app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
 app.config["CACHE_TYPE"] = "null"
-app.config['DEBUG'] =True
+app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/lc1012019'
 app.config['SQLALCHEMY_ECHO'] = True 
-app.config['SITE_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/site/uploads'
-app.config['ADMIN_UPLOADS'] = "D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/admin/uploads"    
+app.config['SITE_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/site/uploads/'
+app.config['ADMIN_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/admin/uploads/'    
 app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG', 'GIF']
 app.config['DATA_FILES'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/'
+app.config['RELATIVE_PATH_SITE'] = '../static/site/uploads/'
+app.config['RELATIVE_PATH_ADMIN'] = '../static/admin/uploads/'
 db = SQLAlchemy(app)
 
 #Create function to get default values from other columns when needed
@@ -346,7 +348,7 @@ def admin():
         session['user'] = user
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
-        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed)
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active")
     return redirect(url_for('login'))
 
 
@@ -361,8 +363,8 @@ def profile(user_id):
     if 'authenticated' in session:
         if user_id == session.get('user')['id']:
             user = session.get('user')
-            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'))
-    return redirect(url_for('login')) , print(app.config['DATA_FILES'])
+            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'), profile_active="active")
+    return redirect(url_for('login')) 
 
 @app.route('/updateProfile/<int:user_id>', methods=['POST', 'GET'])
 def updateProfile(user_id):
@@ -392,32 +394,46 @@ def updateProfile(user_id):
                 # if request.form['bio'] != '':
                 #     updatemeta.user_bio = request.form['bio']
                  
-
-                if request.files:
-                    avatar  = request.files['file']
-                    if avatar.filename == '':
-                        return jsonify({'message': 'Image must have a name.', 'alertType': 'error', 'callback': '', 'timer': 2500})
-                    filename = secure_filename(avatar.filename)
-                    avatar.save(os.path.join(app.config['ADMIN_UPLOADS'], filename))
-                    session['avatar'] = url_for('uploaded_file', filename = filename)
-                    #if updatemeta:
-                        #updatemeta.meta_vale = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename) where meta_key == avatar
-                        #else: 
-                            #User_meta.meta_key = avatar
-                            #User_meta.meta_value == avatar.url
-                            #session.add()
-                        
-                     
+                #if updatemeta:
+                    #updatemeta.meta_vale = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename) where meta_key == avatar
+                    #else: 
+                        #User_meta.meta_key = avatar
+                        #User_meta.meta_value == avatar.url
+                        #session.add()  
 
                 #commit updates to the database
                 db.session.commit()
+                #get updated user 
                 updated = Blog_User.query.filter_by(id = user_id).first()
                 active_user = jsonpickle.encode(updated, unpicklable=False, max_depth=2)
                 user = jsonpickle.decode( active_user)
                 session['user'] = user
                 return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadProfile'})
-
     return redirect(url_for('profile', user_id = user_id))
+    
+
+@app.route('/update_avatar/<int:user_id>', methods=['POST', 'GET'])
+def update_avatar(user_id):
+    if request.method == 'POST':
+        if 'authenticated' in session:
+            if user_id == session.get('user')['id']:
+                # updatemeta = User_Meta.query.filter_by(user_id = user_id).first()
+                    if request.files:
+                        avatar  = request.files['attachment']
+                        if avatar.filename == '':
+                            return jsonify({'message': 'Image must have a name.', 'alertType': 'error', 'callback': '', 'timer': 2500})
+                        filename = secure_filename(avatar.filename)
+                        avatar.save(os.path.join(app.config['ADMIN_UPLOADS'], filename))
+                        session['avatar'] = os.path.join(app.config['RELATIVE_PATH_ADMIN'], filename)
+                        #if updatemeta:
+                            #updatemeta.meta_vale = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename) where meta_key == avatar
+                            #else: 
+                                #User_meta.meta_key = avatar
+                                #User_meta.meta_value == avatar.url
+                                #session.add()
+                        return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadAvatar'})
+    return redirect(url_for('profile', user_id = user_id))
+
 
 
 

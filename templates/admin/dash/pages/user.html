@@ -4,6 +4,7 @@
       <div class="content">
         <div class="container-fluid">
           <div class="row">
+            <!-- Update User Profile-->
             <div class="col-md-8">
               <div class="card">
                 <div class="card-header card-header-icon card-header-rose">
@@ -91,50 +92,47 @@
                             </div>
                         </div>
                         </div>
+                      </div> 
                         <div class="row">
-                            <div class="col-md-3 col-sm-4">
-                                <h4 class="title">Avatar</h4>
-                                <div class="fileinput fileinput-new text-center" data-provides="fileinput">
-                                    <div class="fileinput-new thumbnail img-circle">
-                                    <img src="{{avatar}}" alt="...">
-                                    </div>
-                                    <div class="fileinput-preview fileinput-exists thumbnail img-circle"></div>
-                                    <div>
-                                    <span class="btn btn-round btn-rose btn-file">
-                                        <span class="fileinput-new">Add Photo</span>
-                                        <span class="fileinput-exists">Change</span>
-                                        <input type="file" name="avatar" class="editable" />
-                                    </span>
-                                    <br />
-                                    <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-3 offset-md-4 form-btn-position">
+                            <div class="col-md-3 offset-4 form-btn-position">
                                     <button type="submit" form="updateProfile" class="btn btn-rose pull-right">Update Profile</button>
                             </div>
-
                         </div>
-                        <div class="clearfix"></div>
-                    </div>    
+                        <div class="clearfix"></div>                       
                   </form>
                 </div>
               </div>
             </div>
+            
+            <!--Update Avatar-->
+
             <div class="col-md-4">
-              <div class="card card-profile">
-                <div class="card-avatar">
-                  <a href="#pablo">
-                    <img class="img" src="{{avatar}}" />
-                  </a>
+              <div class="card card-profile user-avatar">
+                <div id ="user-avatar" class="card-header card-header-warning card-header-text">
+                  <div id="avatar-card" class="card-avatar">
+                    <a href="url_for(/team, id = user.id">
+                      <img class="img" src="{{avatar}}" />
+                    </a>
+                  </div>         
                 </div>
                 <div class="card-body">
-                  <h6 class="card-category text-gray">CEO / Co-Founder</h6>
-                  <h4 class="card-title">Alec Thompson</h4>
-                  <p class="card-description">
-                    Don't be scared of the truth because we need to restart the human foundation in truth And I love you like Kanye loves Kanye I love Rick Owens’ bed design but the back is...
-                  </p>
-                  <a href="#pablo" class="btn btn-rose btn-round">Follow</a>
+                  <h4>Update Your Avatar</h4>
+                  <form id="updateAvatar" method="POST" action="{{url_for('update_avatar', user_id=user['id'])}}" enctype="multipart/form-data" data-form-user="{{user['id']}}"> 
+                    <div class="fileinput fileinput-new text-center" data-provides="fileinput">
+                      <div class="fileinput-preview fileinput-exists thumbnail img-circle"></div>
+                        <div if="btnholder">
+                          <span id="imgChgbtns" class="btn btn-warning btn-round btn-file">
+                              <span class="fileinput-new"><i class="material-icons-outlined">add_a_photo</i></span>
+                              <span class="fileinput-exists"><i class="material-icons-outlined">swap_vertical_circle</i></span>
+                            <input type="file" name="attachment" required />
+                          </span>
+                          <a href="#" title="Remove File" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput" data-toggle="tooltip" data-placement="bottom"><i class="material-icons-outlined">remove_circle_outline</i></a>
+                          <button id="updateAvatarSubmit" type="submit" form="updateAvatar" title="Update your avatar" data-toggle="tooltip" data-placement="bottom" class="btn btn-info btn-round fileinput-exists" type="submit" form="quickAdd"> <i class="material-icons-outlined">cloud_upload</i></button>
+                        </div>
+                    </div>
+                    
+                  <!--End Form-->
+                  </form>
                 </div>
               </div>
             </div>
@@ -142,4 +140,22 @@
         </div>
       </div>
       {% endblock %}
+      <!-- <div class="col-md-3 col-sm-4">
+          <h4 class="title">Avatar</h4>
+          <div class="fileinput fileinput-new text-center" data-provides="fileinput">
+              <div class="fileinput-new thumbnail img-circle">
+              <img src="{{avatar}}" alt="...">
+              </div>
+              <div class="fileinput-preview fileinput-exists thumbnail img-circle"></div>
+              <div>
+              <span class="btn btn-round btn-rose btn-file">
+                  <span class="fileinput-new">Add Photo</span>
+                  <span class="fileinput-exists">Change</span>
+                  <input type="file" name="avatar" class=" form-control editable" />
+              </span>
+              <br />
+              <a href="#" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
+              </div>
+          </div>
+      </div> -->
       
