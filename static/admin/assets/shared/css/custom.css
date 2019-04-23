@@ -158,6 +158,77 @@ div.icon-link-size{
     font-size: 36px;
 }
 
+#newPostForm .textbox, #newPostForm .formswitches{
+    display: block;
+    float: left;
+}
+#newPostForm hr {
+    margin: 0;
+}
+
+.panel-header.panel-header-rose.panel-header-icon {
+    TEXT-ALIGN: center;
+    /* display: flex; */
+}
+
+input#addPostTitle {
+    width: 90%;
+    min-height: 62px;
+    border: none;
+}
+#newPostForm .panel-body {
+    height: 50vh;
+}
+
+#newPostForm .panel-body textarea {
+    width: 100%;
+    display: block;
+    border: none;
+    min-height: 40vh;
+}
+.toolbar{
+    background-color: #fff;
+    width: 100%;
+    text-align: left;
+}
+
+.toolbar .toolsholder {
+    /* margin: 20px 15px; */
+}
+
+.toolbar .tools{
+    display: inline;
+    border: #e1bee7 solid thin;
+    padding: 5px;
+    margin: 2.5px;
+    position: relative;
+}
+
+.toolbar .tools.active{
+    background: #e1bee7;
+}
+
+.toolbar .tools i.fa{
+    font-size: 12px
+}
+
+.toolbar .tools .material-icons{
+    font-size: 20px;
+}
+
+.panel.editor .panel-header .panel-icon{
+    box-shadow: none;
+}
+
+.tools .font-color{
+    display: none;
+}
+.tools:hover .font-color{
+    display: block;
+    position: absolute;
+    left: 0;
+    z-index: 50000000000000;
+}
 @media screen and (min-width: 768px){
     .latest-posts {
         margin-left: 78px;

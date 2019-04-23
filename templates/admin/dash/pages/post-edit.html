@@ -1,14 +1,71 @@
 {% extends 'admin/dash/componets/base.html' %}
 {% block content %}
-<div id="blog-edit-page" class="col-md-12">
-    <div class="col-md-8">
-        <div class="panel">
-            <div class="panel-header panel-header-rose panel-header-icon">
-                <div class="panel-icon">
-                    <i class="material-icons">description</i>
+<div class="row">
+    <div id="blog-edit-page" class="col-md-12">
+        <form id="newPostForm" method="POST" action="{{url_for('add_posts')}}">
+            <div class="col-md-8 textbox">                  
+                <div class="panel editor"> 
+                    <div class="panel-header panel-header-rose panel-header-icon">
+                        <div class="panel-icon">
+                            <i class="material-icons">description</i>
+                        </div>
+                        <div class="toolbar">
+                            <div class="toolsholder">
+                                <div class="col-md-1 tools">
+                                    <a href="#" data-command='fontName' data-toggle="tooltip" title="Fonts"><i class='fas fa-font'></i></a>
+                                    <div class="font-color">
+                                        <input type="color" name="color" id="fontColor">
+                                    </div>
+                                </div>
+                                <div class="col-md-1 tools"><a href="#" data-command='fontSize' data-toggle="tooltip" title="Font Size"><i class='material-icons'>format_size</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='foreColor' data-toggle="tooltip" title="Font Color"><i class='material-icons'>text_format</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='heading' data-toggle="tooltip" title="Headings"><i class='fas fa-heading'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='insertParagraph' data-toggle="tooltip" title="New Paragraph"><i class='fas fa-paragraph'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyLeft' data-toggle="tooltip" title="Align Left"><i class='fas fa-align-left'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyCenter' data-toggle="tooltip" title="Align Center"><i class='fas fa-align-center'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyFull'data-toggle="tooltip" title="Justify"><i class='fas fa-align-justify'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyRight' data-toggle="tooltip" title="Align Right"><i class='fas fa-align-right'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='superscript'data-toggle="tooltip" title="Superscript"><i class='fa fa-superscript'></i></a></div>
+                            </div>
+                            <div class="toolsholder">
+                                <div class="col-md-1 tools"><a href="#" data-command='undo' data-toggle="tooltip" title="Undo"><i class='fas fa-undo'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='redo' data-toggle="tooltip" title="Redo"><i class='fas fa-redo'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='createlink' data-toggle="tooltip" title="Insert Link"><i class='fas fa-link'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='insertImage'data-toggle="tooltip" title="Insert Media"><i class='material-icons'>add_photo_alternate</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='formatBlock' data-toggle="tooltip" title="Code Block"><i class='fas fa-code'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='cut' data-toggle="tooltip" title="Cut"><i class='fa fa-cut'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='copy' data-toggle="tooltip" title="Copy"><i class="far fa-copy"></i></a></div> 
+                                <div class="col-md-1 tools"><a href="#" data-command='underline'data-toggle="tooltip" title="Underline"><i class='material-icons'>format_underlined</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='strikeThrough' data-toggle="tooltip" title="Strikethrough"><i class='material-icons'>strikethrough_s</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='bold' data-toggle="tooltip" title="Bold"><i class='material-icons'>format_bold</i></a></div>
+                            </div>   
+                        </div>                      
+                        <input id="addPostTitle" type="text" name="title" required placeholder="Enter your title."/>
+                    </div>
+                    <hr>
+                    <div class="panel-body">
+                        <textarea name="content" required placeholder="Enter your content here."></textarea>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
+            <div class="col-md-4 formswitches" >
+                <div class="panel">
+                    <div class="panel-header panel-header-rose panel-header-ison">
+                        <div class="button-group">
+                            <button class="btn btn-primary btn-round btn-fab">
+                                <i class="material-icons">favorite</i>
+                            </button>
+                            <button class="btn btn-primary btn-round btn-fab">
+                                <i class="material-icons">favorite</i>
+                              </button>
+                        </div>
+                    </div>
+                <div class="panel-body"></div>
+            </div>    
+        </div>      
+    </form>
 </div>
+</div>
+   
+
 {% endblock %}

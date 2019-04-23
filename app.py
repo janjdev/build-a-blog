@@ -130,12 +130,12 @@ class Post(db.Model):
     post_meta = db.relationship('Post_Meta', backref='postmeta', lazy=True)
 
 
-    def __init__(self, title, content):
+    def __init__(self, title, content, post_type, post_mime_type=''):
         self.title = title 
         self.author_id = get_author_id()
         self.content = content
         self.post_type = post_type
-        self.post_mime_type = get_mime_type()
+        self.post_mime_type = post_mime_type
         self.slug = slugify(title)
 
     
@@ -256,7 +256,7 @@ def blog():
     return render_template('site/pages/blog.html', title="Blog")
 
 @app.route('/post/<int:post_id>')
-def show_post(post_id):
+def post_single(post_id):
     return
 
 @app.route('/register', methods=['POST', 'GET'])
@@ -363,12 +363,21 @@ def blog_posts():
             return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts)
 
 
-@app.route('/admin/posts/blog/add_post')
-def make_posts():
+@app.route('/admin/posts/blog/add_post', methods=['POST', 'GET'])
+def add_posts():
     if 'authenticated' in session:
         if 'user' in session:
-            #new_post=Post(title, author, content, date, categorey, tags, post_type)
-            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='Edit Post', parent_post='active', avatar=session.get('avatar'), post_active='active')
+            if request.method == 'POST' :
+                title = request.form['title']
+                content = request.form['content']
+                post_type = 'Blog'
+                newPost = Post(title, content, post_type)
+                db.session.add(newPost)
+                db.session.commit()
+                id = newPost.id
+                return redirect(url_for('single_post', post_id = id))
+            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active')
+    return redirect(url_for('login'))
 
 @app.route('/admin/profile/<int:user_id>', methods=['POST', 'GET'])
 def profile(user_id):
