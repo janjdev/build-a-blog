@@ -23,7 +23,7 @@ app.config['ADMIN_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchC
 app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG', 'GIF']
 app.config['DATA_FILES'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/'
 app.config['RELATIVE_PATH_SITE'] = '../static/site/uploads/'
-app.config['RELATIVE_PATH_ADMIN'] = '../static/admin/uploads/'
+app.config['RELATIVE_PATH_ADMIN'] = '/static/admin/uploads/'
 db = SQLAlchemy(app)
 
 #Create function to get default values from other columns when needed
@@ -230,7 +230,7 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 @app.route('/')
 def home():
     posts = Post.query().limit(13).all()
-    #
+
     postmeta = []
     for post in posts:
         img_url = Post_Meta.query.filter((Post_Meta.post_id == post.id) & (Post_Meta.meta_key == 'post_attachment')).first().meta_value
@@ -320,17 +320,18 @@ def lock():
     if request.method == 'POST':
         password = request.form['password']
         if 'id' in session:
-            if check_pw_hash(password, user['password']):
+            if check_pw_hash(password, session.get('user')['password']):
                 session['authenticated'] = True
                 session.pop('locked', None)
-                return jsonify({'message': 'Welcome back, ' + session.get('user')['first_name'], 'callback': 'unlock', 'alertType': 'success', 'timer': 2500})
+                return jsonify({'message': 'Welcome back, ' + session.get('user')['first_name'], 'callback': 'unlock', 'param': session.get('current_url'), 'alertType': 'success', 'timer': 3500})
             else:
-                return jsonify({})
+                return '', 204
+                #jsonify({'message': 'Invalid user or password.', 'alertType': 'error', 'callback': 'noMatch', 'param': 'form'})
         else:
             return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
     session.pop('authenticated', None)
     session['locked'] = True
-    return render_template("admin/auth/pages/lock.html", lock_active='active', user=session.get('user'))
+    return render_template("admin/auth/pages/lock.html", lock_active='active', user=session.get('user'), avatar=session.get('avatar'))
 
 @app.route('/logout')
 def logout():
@@ -348,21 +349,33 @@ def admin():
         session['user'] = user
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
+        session['current_url'] = request.url
         return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active")
     return redirect(url_for('login'))
 
 
-@app.route('/add_post')
-def make_posts():
-    if 'user' in session:
-        #new_post=Post(title, author, content, date, categorey, tags, post_type)
-        return
+@app.route('/admin/posts/blog')
+def blog_posts():
+    if 'authenticated' in session:
+        if 'user' in session:
+            session['current_url'] = request.url
+            posts = Post.query.filter_by(post_type='blog').all()
+            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts)
 
-@app.route('/profile/<int:user_id>', methods=['POST', 'GET'])
+
+@app.route('/admin/posts/blog/add_post')
+def make_posts():
+    if 'authenticated' in session:
+        if 'user' in session:
+            #new_post=Post(title, author, content, date, categorey, tags, post_type)
+            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='Edit Post', parent_post='active', avatar=session.get('avatar'), post_active='active')
+
+@app.route('/admin/profile/<int:user_id>', methods=['POST', 'GET'])
 def profile(user_id):
     if 'authenticated' in session:
         if user_id == session.get('user')['id']:
             user = session.get('user')
+            session['current_url'] = request.url
             return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'), profile_active="active")
     return redirect(url_for('login')) 
 

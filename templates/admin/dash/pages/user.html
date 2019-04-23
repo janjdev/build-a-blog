@@ -115,7 +115,7 @@
                     </a>
                   </div>         
                 </div>
-                <div class="card-body">
+                <div id="avatar_update_body" class="card-body">
                   <h4>Update Your Avatar</h4>
                   <form id="updateAvatar" method="POST" action="{{url_for('update_avatar', user_id=user['id'])}}" enctype="multipart/form-data" data-form-user="{{user['id']}}"> 
                     <div class="fileinput fileinput-new text-center" data-provides="fileinput">

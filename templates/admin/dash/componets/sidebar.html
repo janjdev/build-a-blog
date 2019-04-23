@@ -55,7 +55,7 @@
           <p> Dashboard </p>
         </a>
       </li>
-      <li class="nav-item ">
+      <li class="nav-item {{parent_post}}">
         <a class="nav-link" data-toggle="collapse" href="#pagesExamples">
           <i class="material-icons">file_copy</i>
           <p> Posts
@@ -65,10 +65,28 @@
         <div class="collapse" id="pagesExamples">
           <ul class="nav">
             <li class="nav-item {{ post_active}}">
-              <a class="nav-link" href="">
+              <a class="nav-link" data-toggle="collapse" href="#newpostlink">
                 <i class="material-icons">note</i>
-                <span class="sidebar-normal"> Blog Posts </span>
+                <p> Blog Posts 
+                  <b class="caret"></b>
+                </p>
               </a>
+              <div id="newpostlink" class="collapse">
+                <ul class="nav">
+                  <li class="nav-item {{view_post}}">
+                    <a class="nav-link" href="{{url_for('blog_posts')}}">
+                      <i class="material-icons"> list_view</i>
+                      <span class="sidebar-normal">All Blog Posts</span>
+                    </a>
+                  </li>
+                  <li class="nav-item {{new_post_active}}" >
+                    <a class="nav-link" href="{{ url_for('make_posts') }}">
+                      <i class="material-icons">note_add</i>
+                      <span class="sidebar-normal">Add Post</span>
+                    </a>
+                  </li>
+                </ul>
+              </div>
             </li>
             <li class="nav-item {{event_active}}">
               <a class="nav-link" href="">
