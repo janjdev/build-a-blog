@@ -1,3 +1,7 @@
+b{
+    font-weight: 900;
+}
+
 .form-check .form-check-input {
     opacity: 1;
     height: inherit;
@@ -158,11 +162,11 @@ div.icon-link-size{
     font-size: 36px;
 }
 
-#newPostForm .textbox, #newPostForm .formswitches{
+.newPostForm .textbox, .newPostForm .formswitches{
     display: block;
     float: left;
 }
-#newPostForm hr {
+.newPostForm hr {
     margin: 0;
 }
 
@@ -171,37 +175,52 @@ div.icon-link-size{
     /* display: flex; */
 }
 
-input#addPostTitle {
+#addPostTitle {
     width: 90%;
     min-height: 62px;
     border: none;
+    color: #000;
+    text-align: left;
 }
-#newPostForm .panel-body {
+
+#addPostTitle span.placeholder, #addPostTitle input[name="posttitle"]{
+    position: absolute;
+    bottom: 0;
+}
+#addPostTitle input[name="posttitle"]{
+    display: inline-block;
+    width: 100%;    
+}
+.newPostForm .panel-body {
     height: 50vh;
 }
 
-#newPostForm .panel-body textarea {
+.newPostForm .panel-body #contentbox {
     width: 100%;
-    display: block;
-    border: none;
     min-height: 40vh;
+    font-size: 14px;
 }
 .toolbar{
     background-color: #fff;
     width: 100%;
-    text-align: left;
 }
 
 .toolbar .toolsholder {
-    /* margin: 20px 15px; */
+    margin: 5px 0px;
+    display: inline-block;
 }
 
 .toolbar .tools{
-    display: inline;
+    display: inline-block;
     border: #e1bee7 solid thin;
     padding: 5px;
-    margin: 2.5px;
     position: relative;
+    margin-top: 5px;
+    width: 29px;
+}
+
+.toolsholder .tools i{
+    vertical-align: middle;
 }
 
 .toolbar .tools.active{
@@ -220,15 +239,47 @@ input#addPostTitle {
     box-shadow: none;
 }
 
-.tools .font-color{
+.tools .font-color, .tools .editorInputs input, .tools .editorInputs .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn){
     display: none;
 }
-.tools:hover .font-color{
-    display: block;
+/* .tools:hover .font-color, .tools:hover .editorInputs select{
+    display: block; 
     position: absolute;
     left: 0;
     z-index: 50000000000000;
+} */
+
+.tools:hover .editorInputs .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn){
+     display: block;
+     position: absolute;
+     left: 0;
+     z-index: 50000000000000;
 }
+
+.tools:active, .tools:hover{
+    background-color: #e1bee7;
+}
+
+.dropdown-menu.show{
+    min-width: 100px;
+    max-height: none !important;
+}
+
+button.btn.dropdown-toggle.bs-placeholder.btn-light, button.btn.dropdown-toggle.btn-light {
+    width: 138px;
+    float: left;
+    color: white;
+    font-size: 9px;
+}
+
+.inner.show{
+    max-height: none !important;
+}
+
+span.text{
+    margin: auto;
+}
+
 @media screen and (min-width: 768px){
     .latest-posts {
         margin-left: 78px;
