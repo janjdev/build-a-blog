@@ -1,0 +1,19 @@
+<section class="ftco-section-2">
+    {% if images %}
+    <div class="photograhy">
+        <div class="row no-gutters">
+        {% for image in images %}
+            <div class="col-md-4 ftco-animate">
+                <a href="image.url" class="photography-entry img image-popup d-flex justify-content-center align-items-center" style="background-image: url({{image.url}});">
+                    <div class="overlay"></div>
+                    <div class="text text-center">
+                        <h3>{{image.name}}</h3>
+                        <span class="tag">image</span>
+                    </div>
+                </a>
+            </div>
+        {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+</section>

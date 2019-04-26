@@ -32,6 +32,7 @@ def same_as(column_name):
         return context.get_current_parameters()[column_name]
     return default_function
 
+#Helper Functions
 def allowed_image(mime):
     if mime not in app.config['ALLOWED_IMAGE_EXTENSIONS']:
         return False    
@@ -50,6 +51,19 @@ def get_author(self):
 
 def get_publisher(self):
     return session.get('user').first_name + ' ' + session.get('user').last_name
+
+def get_uploads():
+    list_images = os.listdir(app.config['ADMIN_UPLOADS'])
+    images = []
+    i =0
+    length = len(list_images)
+    while i < length:
+        img = {}
+        img['name'] = list_images[i]
+        img['url'] = os.path.join(app.config['RELATIVE_PATH_ADMIN'], list_images[i])
+        images.append(img)
+        i+=1 
+    return images
 
 def get_mime_type(media):
 #get media file from the form input
@@ -258,7 +272,7 @@ def blog():
 @app.route('/post/<int:post_id>')
 def post_single(post_id):
     return
-
+#=============================================Auth Routes=====================================================
 @app.route('/register', methods=['POST', 'GET'])
 def register():
     if session.get('authenticated'):
@@ -289,7 +303,7 @@ def register():
                 return jsonify({'status': 'error', 'message': 'emails do not match', 'alertType': 'error', 'callback': 'clearEmailFields', 'timer': 3500})
     return render_template('admin/auth/pages/register.html', reg_link="/register", log_link="/login", lock_link="/lock", reg_active='active', filter_color = 'rose')
 
-
+#=========================Login===============================================================================
 @app.route('/login', methods=['POST', 'GET'])
 def login():
     if 'authenticated' in session:
@@ -314,7 +328,7 @@ def login():
     filterColor = 'rose' 
     return render_template('admin/auth/pages/login.html', reg_link="/register", log_link="/login", lock_link="/lock", log_active='active', filter_color = filterColor)
 
-
+#=======================================Lock================================================================================
 @app.route("/lock", methods=['POST', 'GET'])
 def lock():
     if request.method == 'POST':
@@ -333,6 +347,7 @@ def lock():
     session['locked'] = True
     return render_template("admin/auth/pages/lock.html", lock_active='active', user=session.get('user'), avatar=session.get('avatar'))
 
+#=====================================Log Out==============================================================================
 @app.route('/logout')
 def logout():
     session.pop('user', None)
@@ -340,6 +355,12 @@ def logout():
     session.pop('authenticated', None)
     return redirect(url_for('login'))
 
+
+#======================================================================================================================================================
+
+
+
+#===========================================Dash Routes=======================================================================
 @app.route('/admin', methods=['POST', 'GET'])
 def admin():
     if 'authenticated' in session:
@@ -350,7 +371,7 @@ def admin():
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
         session['current_url'] = request.url
-        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active")
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active"), print(auth_user)
     return redirect(url_for('login'))
 
 
@@ -367,6 +388,15 @@ def blog_posts():
 def add_posts():
     if 'authenticated' in session:
         if 'user' in session:
+            images = get_uploads()
+            cats = Term_Taxonomy.query.filter_by(taxonomy='category').all()
+            cat_ids = []
+            for cat in cats:
+                cat_ids.append(cat.term_id)
+            categories = [] 
+            for id in cat_ids:
+                term = Term.query.filter_by(id=id).first().name
+                categories.append(term)
             if request.method == 'POST' :
                 title = request.form['title']
                 content = request.form['content']
@@ -376,8 +406,13 @@ def add_posts():
                 db.session.commit()
                 id = newPost.id
                 return redirect(url_for('single_post', post_id = id))
-            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active')
+            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active', images=images, categories=categories, bodyClass="page-post_edit"), print(categories)
     return redirect(url_for('login'))
+
+# @app.route('/admin/posts/blog/add_post/insert_img')
+# def portfolio():
+#     images = os.listdir(app.config['SITE_UPLOADS'])
+#     return render_template('portfolio.html', images=images)
 
 @app.route('/admin/profile/<int:user_id>', methods=['POST', 'GET'])
 def profile(user_id):
@@ -432,7 +467,6 @@ def updateProfile(user_id):
                 session['user'] = user
                 return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadProfile'})
     return redirect(url_for('profile', user_id = user_id))
-    
 
 @app.route('/update_avatar/<int:user_id>', methods=['POST', 'GET'])
 def update_avatar(user_id):
@@ -460,5 +494,5 @@ def update_avatar(user_id):
 
 
 if (__name__) == '__main__':
-    #db.create_all()
+    db.create_all()
     app.run()

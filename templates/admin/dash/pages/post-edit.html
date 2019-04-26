@@ -3,6 +3,7 @@
 <div class="row">
     <div id="blog-edit-page" class="col-md-12">
         <div class="newPostForm">
+                <form id="newPostForm" method="POST" action="">
             <div class="col-md-8 textbox">                  
                 <div class="panel editor"> 
                     <div class="panel-header panel-header-rose panel-header-icon">
@@ -12,12 +13,21 @@
                         <div class="toolbar">
                             <div class="toolsholder">
                                 <div class="col-md-1 tools">
-                                    <a href="#" data-command='fontName' data-toggle="tooltip" title="Fonts"><i class='fas fa-font'></i></a>
+                                    <a href="#" data-command='fontName' title="Fonts"><i class='fas fa-font'></i></a>
+                                    <div class="js-example-basic-single editorInputs">
+                                        <select class="selectpicker" data-size="5" title="Font Type">
+                                            <option value="Raleway">Raleway</option>
+                                            <option value="Roboto">Roboto</option>
+                                            <option value="Open Sans">Open Sans</option>
+                                            <option value="ZCOOL KuaiLe">ZCOOL KuaiLe</option>
+                                            <option value="Arial">Arial</option>
+                                        </select>
+                                    </div>
                                 </div>
                                 <div class="col-md-1 tools">
-                                    <a href="#" data-command='fontSize' data-toggle="tooltip" title="Font Size"><i class='material-icons'>format_size</i></a>
-                                    <div class="editorInputs">
-                                        <select class="selectpicker data-style="select-with-transition" data-size="1" title="Font Size">
+                                    <a href="#" data-command='fontSize'  title="Font Size"><i class='material-icons'>format_size</i></a>
+                                    <div class="js-example-basic-single editorInputs">
+                                        <select class="selectpicker" data-size="7" title="Font Size">
                                             <option value="1">10px</option>
                                             <option value="2">13px</option>
                                             <option value="3">16x</option>
@@ -28,43 +38,103 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div class="col-md-1 tools"><a href="#" data-command='foreColor' data-toggle="tooltip" title="Font Color"><i class='material-icons'>text_format</i></a>
+                                <div class="col-md-1 tools"><a href="#" data-command='foreColor'  title="Font Color"><i class='material-icons'>text_format</i></a>
                                     <div class="font-color">
                                         <input type="color" name="color" id="fontColor"/>
                                     </div>
                                 </div>
-                                <div class="col-md-1 tools"><a href="#" data-command='heading' data-toggle="tooltip" title="Headings"><i class='fas fa-heading'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='insertParagraph' data-toggle="tooltip" title="New Paragraph"><i class='fas fa-paragraph'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='justifyLeft' data-toggle="tooltip" title="Align Left"><i class='fas fa-align-left'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='justifyCenter' data-toggle="tooltip" title="Align Center"><i class='fas fa-align-center'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='justifyFull'data-toggle="tooltip" title="Justify"><i class='fas fa-align-justify'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='justifyRight' data-toggle="tooltip" title="Align Right"><i class='fas fa-align-right'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='superscript'data-toggle="tooltip" title="Superscript"><i class='fa fa-superscript'></i></a></div>
-                            </div>
-                            <div class="toolsholder">
-                                <div class="col-md-1 tools"><a href="#" data-command='undo' data-toggle="tooltip" title="Undo"><i class='fas fa-undo'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='redo' data-toggle="tooltip" title="Redo"><i class='fas fa-redo'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='createlink' data-toggle="tooltip" title="Insert Link"><i class='fas fa-link'></i></a></div>
-                                <div class="col-md-1 tools">
-                                    <a href="#" data-command='insertImage'data-toggle="tooltip" title="Insert Media"><i class='material-icons'>add_photo_alternate</i></a>
-                                    <div class="editorInputs">
-                                        <input type="file" name="media" id="insertImage" accept="audio/*,video/*,image/*"/>
+                                <div class="col-md-1 tools"><a href="#" data-command='heading' title="Headings"><i class='fas fa-heading'></i></a>
+                                    <div class="js-example-basic-single editorInputs">
+                                        <select class="selectpicker"  data-size="6" title="Heading">
+                                            <option value="H1">H1</option>
+                                            <option value="H2">H2</option>
+                                            <option value="H3">H3</option>
+                                            <option value="H4">H4</option>
+                                            <option value="H5">H5</option>
+                                            <option value="H6">H6</option>
+                                        </select>
                                     </div>
                                 </div>
-                                <div class="col-md-1 tools"><a href="#" data-command='formatBlock' data-toggle="tooltip" title="Code Block"><i class='fas fa-code'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='cut' data-toggle="tooltip" title="Cut"><i class='fa fa-cut'></i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='copy' data-toggle="tooltip" title="Copy"><i class="far fa-copy"></i></a></div> 
-                                <div class="col-md-1 tools"><a href="#" data-command='underline'data-toggle="tooltip" title="Underline"><i class='material-icons'>format_underlined</i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='strikeThrough' data-toggle="tooltip" title="Strikethrough"><i class='material-icons'>strikethrough_s</i></a></div>
-                                <div class="col-md-1 tools"><a href="#" data-command='bold' data-toggle="tooltip"  title="Bold"><i class='material-icons'>format_bold</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='insertParagraph'  title="New Paragraph"><i class='fas fa-paragraph'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyLeft'  title="Align Left"><i class='fas fa-align-left'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyCenter'  title="Align Center"><i class='fas fa-align-center'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyFull' title="Justify"><i class='fas fa-align-justify'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='justifyRight'  title="Align Right"><i class='fas fa-align-right'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='superscript' title="Superscript"><i class='fa fa-superscript'></i></a></div>
+                            </div>
+                            <div class="toolsholder">
+                                <div class="col-md-1 tools"><a href="#" data-command='undo'  title="Undo"><i class='fas fa-undo'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='redo'  title="Redo"><i class='fas fa-redo'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='createlink'  title="Insert Link"><i class='fas fa-link'></i></a></div>
+                                <div class="col-md-1 tools">
+                                    <a href="#uploadsGallery" data-command='insertImage' data-toggle="modal" title="Insert Media"><i class='material-icons'>add_photo_alternate</i></a>
+                                    <!-- <div class="editorInputs"> -->
+                                            <div id="uploadsGallery" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
+                                                    <div class="modal-dialog modal-lg">
+                                                      <div class="modal-content">
+                                                            <div class="modal-header">
+                                                                <button id="insertImg" type="button" class="btn btn-primary" data-dismiss="modal">Insert Image</button>
+                                                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                    <span aria-hidden="true">&times;</span>
+                                                                </button>
+                                                                </div>                                                            
+                                                            <div class="modal-body">
+                                                                {% if images %}
+                                                                <section class="ftco-section-2">
+                                                                    <div class="photograhy">
+                                                                        <div class="row no-gutters">
+                                                                    {% for image in images  %}                                                                       
+                                                                            <div class="col-md-4 ftco-animate">
+                                                                                <div class="form-check">
+                                                                                    <label class="form-check-label">
+                                                                                        <input class="form-check-input" type="radio" name="imgselect" value="{{image.url}}"> 
+                                                                                        <span class="circle">
+                                                                                        <span class="check"></span>
+                                                                                        </span>
+                                                                                    </label>
+                                                                                </div>                                                                                
+                                                                                <a href="{{image.url}}" class="photography-entry img image-popup d-flex justify-content-center align-items-center" style="background-image: url({{image.url}});">
+                                                                                    <div class="overlay"></div>
+                                                                                    <div class="text text-center">
+                                                                                        <h3>{{image.name}}</h3>
+                                                                                        <span class="tag">Model</span>
+                                                                                    </div>
+                                                                                </a>
+                                                                            </div>
+                                                                        {% endfor %}
+                                                                    </div>
+                                                                    </div>
+                                                                </section>
+                                                                {% else %}
+                                                                <h3>There is no media in your uploads.</h3>
+                                                            {% endif %}
+                                                            </div>
+                                                            <div class="modal-footer">
+                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                  </div>
+                                </div>
+                                <div class="col-md-1 tools"><a href="#" data-command='backColor'  title="Code Block"><i class='fas fa-fill-drip'></i></a>
+                                    <div class="font-color">
+                                        <input type="color" name="color" id="fontColor"/>
+                                    </div>
+                                </div>
+                                <div class="col-md-1 tools"><a href="#" data-command='cut'  title="Cut"><i class='fa fa-cut'></i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='copy'  title="Copy"><i class="far fa-copy"></i></a></div> 
+                                <div class="col-md-1 tools"><a href="#" data-command='underline' title="Underline"><i class='material-icons'>format_underlined</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='strikeThrough'  title="Strikethrough"><i class='material-icons'>strikethrough_s</i></a></div>
+                                <div class="col-md-1 tools"><a href="#" data-command='bold'   title="Bold"><i class='material-icons'>format_bold</i></a></div>
                             </div>   
                         </div>                      
-                        <div id="addPostTitle"  contenteditable="true" tabindex="1">
-                        </div>
+                        <div id="addPostTitle"  contenteditable="true" tabindex="1" data-placeholder='Enter Your Title'></div>
+                        <input id="titlebox" name="title" type="text" value="" required hidden/>
                     </div>
                     <hr>
                     <div class="panel-body">
-                        <div id="contentbox" contenteditable="true"></div>
+                        <div id="contentbox" contenteditable="true" data-placeholder='Enter Your Content Here'></div>
+                        <textarea id="postcontent" name="content" required hidden></textarea>
                     </div>
                 </div>
             </div>
@@ -72,24 +142,74 @@
                 <div class="panel">
                     <div class="panel-header panel-header-rose panel-header-ison">
                         <div class="button-group">
-                            <button class="btn btn-primary btn-round btn-fab">
-                                <i class="material-icons">favorite</i>
-                            </button>
-                            <button class="btn btn-primary btn-round btn-fab">
-                                <i class="material-icons">favorite</i>
-                              </button>
+                            <button id="pubPost" class="btn btn-primary">
+                                <i class="material-icons-outlined">publish</i>
+                                <p>publish</p>
+                             </button>
+                             <button id="viewPost" class="btn btn-primary">
+                                <i class="material-icons-sharp">open_in_new</i>
+                                <P>view post</P>
+                            </button> 
                         </div>
                     </div>
-                <div class="panel-body"></div>
-            </div>    
+                <div class="panel-body">
+                    <div class="input-group">
+                        <!--Add tags to post-->
+                        <div id="newPostTags" class="bootstrap-tagsinput">
+                            <span><i class="material-icons-sharp">style</i> Add Your Tags <small>or none at all...</small></span>
+                            <input type="text" name="tags" value="Ghana,Nigeria,Guinea,Senegal" class="form-control tagsinput" data-role="tagsinput" data-color="info" placeholder="Enter tags..">
+                        </div>
+                        <!--Add Categories to post-->
+                        <div id="newPostCat">
+                        {% if categories %}
+                        <span><i class="material-icons-sharp">category</i> categories</span>
+                        <select id="catSelect" class="selectpicker" data-size="{{categories|length}}" multiple data-style="btn btn-primary btn-round">
+                            <option value="Blog" disabled selected >Blog</option>
+                            {% for cat in categories %}                            
+                                <option value="{{cat}}">{{cat}}</option>
+                             {% endfor %}
+                            </select>
+                        {% endif %}                            
+                        </div> 
+                        <!--ROW END/START-->
+                        <div class="row">
+                        <!-- Add Attachment-->                        
+                            <div id="newPostFeature">
+                                <h4 class="title">Add Feature Image</h4>
+                                <div class="fileinput fileinput-new text-center" data-provides="fileinput">
+                                    <div class="fileinput-new thumbnail">
+                                      <img src="https://loremflickr.com/320/240/african" alt="place holder">
+                                    </div>
+                                    <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                                    <div>
+                                      <span class="btn btn-rose btn-round btn-file">
+                                        <span class="fileinput-new">Select image</span>
+                                        <span class="fileinput-exists">Change</span>
+                                        <input type="file" name="..." />
+                                      </span>
+                                      <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
+                                    </div>
+                                </div>
+                            </div>
+                        <!-- Make Post a slider image-->
+                        <div id="sliderSwitch" class="togglebutton">
+                            <span>Add post to home page slider?</span>   
+                            <label>
+                                <input type="checkbox" name="slider">
+                                <span class="toggle"></span>
+                            </label>
+                        </div> 
+                        </div>          
+                     </div>
+                </div>
+            </div> 
+            </form>   
         </div>      
     </div>
 </div>
-<form id="newPostForm" method="POST" action="">
-    <input id="titlebox" name="title" type="text" required hidden/>
-    <textarea id="postcontent" name="content"  required hidden></textarea>
-</form>
-</div>
+
+   
    
 
+</div>
 {% endblock %}
