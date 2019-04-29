@@ -17,7 +17,7 @@ app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
 app.config["CACHE_TYPE"] = "null"
 app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/lc1012019'
-app.config['SQLALCHEMY_ECHO'] = True 
+app.config['SQLALCHEMY_ECHO'] = True
 app.config['SITE_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/site/uploads/'
 app.config['ADMIN_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/admin/uploads/'    
 app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG', 'GIF']
@@ -43,14 +43,14 @@ def create_username(username, first_name, last_name):
     else:
         return slugify(first_name + last_name)
 
-def get_author_id(self):
-    return session.get('user').id
+def get_author_id():
+    return session.get('user')['id']
 
-def get_author(self):
-    return session.get('user').first_name + ' ' + session.get('user').last_name
+def get_author():
+    return session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
 
-def get_publisher(self):
-    return session.get('user').first_name + ' ' + session.get('user').last_name
+def get_publisher():
+    return session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
 
 def get_uploads():
     list_images = os.listdir(app.config['ADMIN_UPLOADS'])
@@ -158,7 +158,8 @@ class Published_Post(db.Model):
     published_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     published_by = db.Column(db.String(255), nullable=False)
 
-    def __init__(self):
+    def __init__(self, post_id):
+        self.post_id = post_id
         self.published_by = get_publisher()
 
 class Post_Meta(db.Model):
@@ -271,7 +272,10 @@ def blog():
 
 @app.route('/post/<int:post_id>')
 def post_single(post_id):
-    return
+    post = Post.query.filter_by(id=post_id).first()
+    
+    return render_template('site/pages/single.html', post=post)
+
 #=============================================Auth Routes=====================================================
 @app.route('/register', methods=['POST', 'GET'])
 def register():
@@ -369,25 +373,74 @@ def admin():
         user = jsonpickle.decode( active_user)
         session['user'] = user
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
+        images = get_uploads()
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
         session['current_url'] = request.url
-        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active"), print(auth_user)
+        #Post.query.order_by(Post.date_created.desc()).limit(3).all()
+        array = [10, 11, 13]
+        hposts = []
+        for i in array:
+            hposts.append(Post.query.filter_by(id=i).first()) 
+        posts = []
+        for p in hposts:
+            post = {}
+            id = p.author_id
+            author = Blog_User.query.filter_by(id=id).first()
+            pubDate = Published_Post.query.filter_by(post_id=p.id).first().published_date
+            img = Post_Meta.query.filter((Post_Meta.post_id == p.id) | (Post_Meta.meta_key == 'attachment')).first().meta_value
+            post['post'] = p
+            post['author'] = author
+            post['pubdate'] = pubDate
+            post['img'] = img
+            posts.append(post)
+        
+        postCount = len(Post.query.all())
+        pageCount = len(Post.query.filter_by(post_type='page').all())
+        catCount = len(Term_Taxonomy.query.filter_by(taxonomy='category').all())
+        tagCount = len(Term_Taxonomy.query.filter_by(taxonomy='tag').all())
+        counts = {'post':postCount, 'page': pageCount, 'cat': catCount, 'tag': tagCount}
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active", images=images, posts=posts, counts=counts)
     return redirect(url_for('login'))
 
+#=================Dashboard Actions========================================================================
 
-@app.route('/admin/posts/blog')
-def blog_posts():
+#Add Media to Library
+@app.route('/admin/quickAdd', methods=['POST', 'GET'])
+def quickAdd():
+    if request.method == 'POST':
+        if request.files:
+            media  = request.files['attachment']
+            if media.filename == '':
+                return jsonify({'message': 'Your file must have a name.', 'alertType': 'error', 'callback': '', 'timer': 2500})
+            filename = secure_filename(media.filename)
+            media.save(os.path.join(app.config['ADMIN_UPLOADS'], filename))
+            return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'reset', 'param': 'form'})
+    return redirect(url_for('admin'))
+
+
+#View Created Posts By Type
+@app.route('/admin/posts/<postType>')
+def view_posts(postType):
     if 'authenticated' in session:
         if 'user' in session:
             session['current_url'] = request.url
-            posts = Post.query.filter_by(post_type='blog').all()
-            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts)
+            posts = []
+            theposts = Post.query.filter_by(post_type=postType).all()
+            for p in theposts:
+                post = {}
+                id = p.author_id
+                author = Blog_User.query.filter_by(id=id).first()
+                post['post'] = p
+                post['author'] = author                
+                posts.append(post)
+            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts), print(posts)
 
 
 @app.route('/admin/posts/blog/add_post', methods=['POST', 'GET'])
 def add_posts():
     if 'authenticated' in session:
         if 'user' in session:
+            session['current_url'] = request.url
             images = get_uploads()
             cats = Term_Taxonomy.query.filter_by(taxonomy='category').all()
             cat_ids = []
@@ -406,8 +459,95 @@ def add_posts():
                 db.session.commit()
                 id = newPost.id
                 return redirect(url_for('single_post', post_id = id))
-            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active', images=images, categories=categories, bodyClass="page-post_edit"), print(categories)
+            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active', images=images, categories=categories, bodyClass="page-post_edit")
     return redirect(url_for('login'))
+
+@app.route('/admin/posts/blog/add_post/publish', methods=['POST', 'GET'])
+def publish_post():
+    if 'authenticated' in session:
+        if 'user' in session:
+            if request.method == 'POST':
+            # create the new post
+                title = request.form['title']
+                content = request.form['content']
+                if 'postType' in request.args:
+                    post_type = request.form['postType']    
+                else:
+                    post_type = 'Blog'
+                newPost = Post(title, content, post_type)
+                db.session.add(newPost)
+                db.session.commit()
+#================Get the new ID of post ===============================            
+                new_id = newPost.id
+#================Create the url to view post ==========================
+                url = '/post/' + str(new_id)
+#======================================================================
+
+            # update the post_status    
+                updatePost = Post.query.filter_by(id=new_id).first()
+                updatePost.post_status = 'published'
+            #Add Post to published_post table
+                pubPost = Published_Post(new_id)
+                db.session.add(pubPost)
+                db.session.commit()
+
+#=============================================================================            
+            #update tags, categories, and postmeta data
+#=============================================================================
+                #Tags==============================
+                if 'tags' in request.args:
+                    tags = request.form['tags']
+                    tags = tags.split(',')
+                    for tag in tags:                        
+                        t = Term.query.filter_by(slug=tag.lower()).first()
+
+                        if t:
+                            taxID = Term_Taxonomy.query.filter_by(term_id=t.id).first()
+                            if taxID:
+                                newRelation = Term_Relationship(new_id, taxID.id)
+                                db.session.add(newRelation)
+                                db.session.commit()
+                                
+                        else:
+                            newTerm = Term(tag)
+                            db.session.add(newTerm)
+                            db.session.commit()
+                        
+                            newTax = Term_Taxonomy('tag', newTerm.id)
+                            db.session.add(newTax)
+                            db.session.commit()
+
+                            newRelation = Term_Relationship(new_id, newTax.id)
+                            db.session.add(newRelation)
+                            db.session.commit()    
+
+                #Categories==========================================================
+                if 'category' in request.form:
+                    categories = request.form['category']
+                    categories = categories.split(',')
+                    for category in categories:
+                        catTerm = Term.query.filter_by(name=category).first()
+                        if catTerm:
+                            catTax = Term_Taxonomy.query.filter_by(term_id=catTerm.id).first()
+                            if catTax:
+                                newRelation = Term_Relationship(new_id, catTax.id)
+                                db.session.add(newRelation)
+                                db.session.commit()
+                                        
+                #Postmeta==============================================================
+                if 'featureImg' in request.form:
+                    attach = request.form['featureImg']
+                    attachMeta = Post_Meta(new_id, 'attachment', attach)
+                    db.session.add(attachMeta)
+                if 'slider' in request.form:                    
+                    slideMeta = Post_Meta(new_id, 'slider', True)
+                    db.session.add(slideMeta)
+                if post_type == 'Event':
+                    event_date = request.form['eventDate']
+                    eveMeta = Post_Meta(new_id, 'event_date', event_date)
+                db.session.commit()
+                return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2500, 'callback': 'openView', 'param': '/post/' + str(new_id) })
+
 
 # @app.route('/admin/posts/blog/add_post/insert_img')
 # def portfolio():
@@ -494,5 +634,5 @@ def update_avatar(user_id):
 
 
 if (__name__) == '__main__':
-    db.create_all()
+    #db.create_all()
     app.run()

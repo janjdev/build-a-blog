@@ -1,1 +1,1 @@
-app.config['DATA_FILES']
+/admin/posts/blog/add_post/publish'

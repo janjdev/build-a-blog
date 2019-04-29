@@ -3,7 +3,7 @@
 <div class="row">
     <div id="blog-edit-page" class="col-md-12">
         <div class="newPostForm">
-                <form id="newPostForm" method="POST" action="">
+                <form id="newPostForm" method="POST" action="/admin/posts/blog/add_post/publish'">
             <div class="col-md-8 textbox">                  
                 <div class="panel editor"> 
                     <div class="panel-header panel-header-rose panel-header-icon">
@@ -133,7 +133,7 @@
                     </div>
                     <hr>
                     <div class="panel-body">
-                        <div id="contentbox" contenteditable="true" data-placeholder='Enter Your Content Here'></div>
+                        <div id="contentbox" tabindex="2" contenteditable="true" data-placeholder='Enter Your Content Here'></div>
                         <textarea id="postcontent" name="content" required hidden></textarea>
                     </div>
                 </div>
@@ -163,7 +163,7 @@
                         <div id="newPostCat">
                         {% if categories %}
                         <span><i class="material-icons-sharp">category</i> categories</span>
-                        <select id="catSelect" class="selectpicker" data-size="{{categories|length}}" multiple data-style="btn btn-primary btn-round">
+                        <select id="catSelect" class="selectpicker" name="category" data-size="{{categories|length}}" multiple data-style="btn btn-primary btn-round">
                             <option value="Blog" disabled selected >Blog</option>
                             {% for cat in categories %}                            
                                 <option value="{{cat}}">{{cat}}</option>
@@ -178,17 +178,20 @@
                                 <h4 class="title">Add Feature Image</h4>
                                 <div class="fileinput fileinput-new text-center" data-provides="fileinput">
                                     <div class="fileinput-new thumbnail">
-                                      <img src="https://loremflickr.com/320/240/african" alt="place holder">
+                                      <!-- <img src="https://loremflickr.com/320/240/african" alt="place holder"> -->
                                     </div>
-                                    <div class="fileinput-preview fileinput-exists thumbnail"></div>
+                                    <div class="fileinput-preview thumbnail">
+                                            <img src="https://loremflickr.com/320/240/african" alt="place holder">
+                                    </div>
                                     <div>
-                                      <span class="btn btn-rose btn-round btn-file">
+                                      <span id="attachmentBtn" class="btn btn-rose btn-round btn-file">
                                         <span class="fileinput-new">Select image</span>
                                         <span class="fileinput-exists">Change</span>
-                                        <input type="file" name="..." />
+                                        <input type="text" name="featureImg" value="" hidden />
                                       </span>
-                                      <a href="#pablo" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
+                                      <a href="#" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="fa fa-times"></i> Remove</a>
                                     </div>
+                                    {% include '/admin/dash/componets/imagebrowser.html' %}
                                 </div>
                             </div>
                         <!-- Make Post a slider image-->

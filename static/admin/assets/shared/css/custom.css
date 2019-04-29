@@ -2,7 +2,11 @@ b{
     font-weight: 900;
 }
 
-.form-check .form-check-input {
+.fa, .fab, .fal, .far, .fas{
+    font-family: Fontawesome;
+}
+
+.page-post_edit .form-check .form-check-input {
     opacity: 1;
     height: inherit;
     width: inherit;
@@ -74,6 +78,11 @@ h4.navbar {
     border: none;
 }
 
+.card-body img, .card .card-header.card-header-image img {
+    max-width: 100%;
+    max-height: 350px;
+}
+
 .form-group span.input-group-text {
     display: inline;
     padding: 0 15px;
@@ -110,6 +119,9 @@ button#quickPostSubmit, button#quickAddSubmit {
     top: 10px;
 }
 
+.input-group.animated.flipInX{
+    display: none;
+}
 .dash-cards h4.card-title {
     display: inline-block;
 }
@@ -131,18 +143,13 @@ div#quickPostAttachment {
     filter: invert(1) sepia(0) saturate(5) hue-rotate(0deg);
 }
 
-.latest-posts .card-header.card-header-image {
-    background-image: url(https://loremflickr.com/320/240/african);
-    width: 100%;
-    height: 200px;
-    margin: 0;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
+#blog-post_table .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn){
+    width: 150px;
 }
 
-#blog-post_table table.table-striped th .bootstrap-select:not([class*=col-]):not([class*=form-control]):not(.input-group-btn){
-    width: 150px;
+.blukActions {
+    display: inline-flex;
+    float: right;
 }
 
 div.icon-link-size{
@@ -273,7 +280,7 @@ span.text{
     margin: auto;
 }
 
-.formswitches .panel-header.panel-header-rose.panel-header-ison {
+.formswitches .panel-header.panel-header-rose.panel-header-icon {
     z-index: 2 !important;
 }
 
@@ -398,8 +405,8 @@ a.photography-entry.img.image-popup.d-flex.justify-content-center.align-items-ce
     from {
       opacity: 0;
       visibility: hidden;
-      /*-webkit-transform: translate3d(0, 100%, 0);
-      transform: translate3d(0, 100%, 0);*/
+      -webkit-transform: translate3d(0, 100%, 0);
+      transform: translate3d(0, 100%, 0);
       -webkit-transform: translate3d(0, 40px, 0);
       transform: translate3d(0, 40px, 0);
     }

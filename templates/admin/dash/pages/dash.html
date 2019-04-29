@@ -2,21 +2,14 @@
   {% block content %}
           <h4 class="navbar purple-gradient-reverse">Latest Posts</h4>
           <div class="row latest-posts-view">
-            <div class="col-md-12">
-              <div class="panel">
-                <div class="panel-header  panel-header-icon" data-header-animation="false">
-                  <div class="panel-icon purple-gradient">
-                    <i class="material-icons-sharp">notes</i>
-                  </div>
-                </div>
-                <div class="panel-body ">
-                  <div class="row">
-                    <div class="container latest-posts">
+           
+                        {% if posts %}
+                    {% for post in posts %}
                       <div class="col-md-4">
                           <div class="card card-product" data-count="0">
                             <div class="card-header card-header-image" data-header-animation="true">
-                              <a href="post/post.id">
-                                <!-- <img class="img" src=""> -->
+                              <a href="{{url_for('post_single', post_id=post.post['id'])}}">
+                                <img class="img" src="{{post.img}}">
                               </a>
                             </div>
                             <div class="card-body">
@@ -35,27 +28,25 @@
                                 </button>
                               </div>
                               <h4 class="card-title">
-                                <a href=" url_for('post', id = post.id">post.title</a>
+                                <a href=" {{url_for('post_single', post_id=post.post['id'])}}">{{post.post.title}}</a>
                               </h4>
                               <div class="card-description">
-                                post.content[50]
+                               {{post.post.content|safe}}
                               </div>
                             </div>
                             <div class="card-footer">
                               <div class="price">
-                                <h4>post.published.date</h4>
+                                <h4>{{post.pubdate}}</h4>
                               </div>
                               <div class="stats">
-                                <p class="card-category"><i class="material-icons">by</i> post.author</p>
+                                <p class="card-category"><i class="material-icons">by</i> {{post.author.first_name}} {{post.author.last_name}}</p>
                               </div>
                             </div>
                           </div>
-                        </div>                   
-                      </div>                      
-                  </div>
-                </div>
-              </div>
-            </div>
+                        </div>
+                        {% endfor %}
+                        {% endif %}                        
+                     
           </div>
 <!-- <button type="button" class="btn btn-round btn-default dropdown-toggle btn-link" data-toggle="dropdown">7 days</button> -->
           <div class="row">
@@ -82,19 +73,19 @@
                                   </th>
                                 </tr>
                                 <tr>
-                                  <td><span>numer of posts</span>Posts</td>
+                                  <td><span>{{counts.post}}</span> Posts</td>
                                   <td><span>num of comments</span>Comments</td>
                                 </tr>
                                 <tr>
-                                    <td><span>nm of pages</span>Pages</td>
+                                    <td><span>{{counts.page}}</span> Pages</td>
                                     <td><span>num of approved comments</span>Approved</td>
                                 </tr>
                                 <tr>
-                                    <td><span>num of categories</span>Categories</td>     
+                                    <td><span>{{counts.cat}}</span> Categories</td>     
                                     <td><span>num of pending comments</span>Pending</td>
                                 </tr>
                                 <tr>
-                                    <td><span>num of tags<span>Tags</td>
+                                    <td><span>{{counts.tag}}<span> Tags</td>
                                         
                                     <td></span>num of spam comments</span>Spam</td>
                                 </tr>
@@ -118,7 +109,7 @@
                      
                     </div>
                     <div class="card-body ">
-                      <form id="quickPost" class="form" action="" method="POST" enctype="multipart/form-data">
+                      <form id="quickPost" class="form" action="" method="POST">
                         <div class="input-group">
                           <div class="input-group-prepend">
                             <span class="input-group-text">
@@ -126,7 +117,7 @@
                             </span>
                           </div>
                           <label for="postType">Set the post type.</label>   
-                          <select id="postType" class="form-control selectpicker" data-style="btn btn-link" required>
+                          <select id="postType" name="postType" class="form-control selectpicker" data-style="btn btn-link" required>
                             <option>Blog</option>
                             <option>Event</option>
                           </select>
@@ -158,24 +149,27 @@
                           </div>                          
                         </div>
                         <div id="quickPostAttachment" class="fileinput fileinput-new text-center " data-provides="fileinput">
-                          <p>Add your image.</p>
-                          <div class="fileinput-preview fileinput-exists thumbnail img-raised"></div>
+                          <p>Add a post image.</p>
+                          <div class="fileinput-preview thumbnail img-raised">
+                            <img src="https://loremflickr.com/320/240/blackpeople"/>
+                          </div>
                           <div class="quickPost_attachment_inputbtns">
-                            <a class="btn btn-raised btn-round btn-default btn-file pink darken-1">
+                            <a id="attachmentBtn" href="#" class="btn btn-raised btn-round btn-default btn-file pink darken-1">
                                 <span class="fileinput-new"><i class="material-icons-outlined">insert_photo</i></span>
                                 <span class="fileinput-exists"><i class="material-icons-outlined">swap_vertical_circle</i></span>
-                                <input type="file" name="attachment" />
+                                <input type="text" name="featureImg"  value="" hidden />
                             </a>
                             <a href="#" class="btn btn-danger btn-round fileinput-exists" data-dismiss="fileinput"><i class="material-icons-outlined">remove_circle_outline</i></a>
                           </div>
+                          {% include '/admin/dash/componets/imagebrowser.html' %}
                         </div>
-                        <div class="input-group">
+                        <div class="input-group animated flipInX">
                             <div class="input-group-prepend">
                               <span class="input-group-text">
                                 <i class="material-icons">filter_5</i>
                               </span>
                             </div>
-                            <input type="text" name="eventDate" class="form-control datetimepicker" value="" placeholder="select event date and/or time">
+                            <input id="eventDate" type="text" name="eventDate" class="form-control datetimepicker" value="" placeholder="select event date and/or time">
                           </div>                    
                       </form>  
                     </div>
