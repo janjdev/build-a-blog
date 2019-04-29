@@ -241,18 +241,21 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 #     return None
 
 
-
+# home page first 13 posts
 @app.route('/')
 def home():
-    posts = Post.query().limit(13).all()
+    posts = Post.query.limit(13).all()
+    post = []
+    for p in posts:
+        postmeta = {}
+        if Post_Meta.query.filter_by(post_id=p.id).all():
+           postmeta['meta'] = Post_Meta.query.filter_by(post_id=p.id).all()
+        postmeta['author'] = Blog_User.query.filter_by(id=p.author_id).first()
+        postmeta['post'] = p
+        post.append(postmeta)
+    return render_template('site/pages/index.html', title='Home', post=post)
 
-    postmeta = []
-    for post in posts:
-        img_url = Post_Meta.query.filter((Post_Meta.post_id == post.id) & (Post_Meta.meta_key == 'post_attachment')).first().meta_value
-        author_name = Blog_User.query.filter_by(id == post.author_id).first().first_name
-        author_name += ' ' +Blog_User.query.filter_by(id == post.author_id).first().last_name
-        postmeta.append({post.id: [img_url, author_name]})
-    return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta)
+#Page by number
 
 @app.route('/<int:page_num>')
 def homeAll(page_num):
@@ -265,13 +268,24 @@ def homeAll(page_num):
         postmeta.append({post.id: [img_url, author_name]})
     return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta)
 
-@app.route('/blog.html')
-def blog():
+#post of all types 
+
+@app.route('/posts')
+def posts():
     posts = Post.query().all().paginate(per_page=13, page=1)
-    return render_template('site/pages/blog.html', title="Blog")
+    return render_template('site/pages/blog.html', title="Blog", posts=posts)
+
+#post by type
+
+@app.route('/posts/<type>', methods=['GET'])
+def posts_type(type):
+    posts = Post.query.filter_by(post_type=type).all()
+    return render_template('site/pages/blog.html', title=type.upper(), posts=posts)
+
+#single post page by post id
 
 @app.route('/post/<int:post_id>')
-def post_single(post_id):
+def post(post_id):
     post = Post.query.filter_by(id=post_id).first()
     
     return render_template('site/pages/single.html', post=post)

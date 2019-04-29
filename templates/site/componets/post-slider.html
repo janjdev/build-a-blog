@@ -1,8 +1,24 @@
-{% if posts %}
+{% set slides = [] %}
+{% if post %}
+    {% for o in post %}
+        {% if o.meta %}
+            {% for meta in o.meta %}
+                {% if meta.meta_key == 'slider' %}
+                    {{ slides.append(o) or '' }}
+                {% endif %}
+            {% endfor %}
+        {% endif %}
+    {% endfor %}
+{% endif %}
+
+{% if slides|length > 0 %}
 <aside id="colorlib-hero">
     <div class="flexslider">
         <ul class="slides">
-           <li style="background-image: url(images/img_bg_1.jpg);">
+         {% for slide in slides %} 
+           <li 
+            {% for meta in slide.meta  %}
+			 {% if meta.meta_key == 'attachment' %}style="background-image: url({{meta.meta_value}});"  {% endif %} {% endfor %}>  
                <div class="overlay"></div>
                <div class="container">
                    <div class="row">
@@ -10,17 +26,18 @@
                            <div class="slider-text-inner">
                                <div class="desc">
                                    <p class="meta">
-                                        <span class="cat"><a href="#">Events</a></span>
-                                        <span class="date">20 March 2018</span>
-                                        <span class="pos">By <a href="#">Rich</a></span>
+                                        <span class="cat"><a href="{{url_for('posts_type', type=slide.post['post_type'])}}">{{slide.post.post_type}}</a></span>
+                                        <span class="date">{{slide.post.date_created.strftime('%d %B %Y')}}</span>
+                                        <span class="pos">By <a href="#">{{slide.author.first_name}}</a></span>
                                     </p>
-                                   <h1>How a website designer began customizing and designing</h1>
+                                   <h1><a href="{{url_for('post', post_id=slide.post['id'])}}">{{slide.post.title|striptags|truncate(255, False, '...', 0)}}</a></h1>
                                </div>
                            </div>
                        </div>
                    </div>
                </div>
            </li>
+            {% endfor %} 
           </ul>
       </div>
 </aside>

@@ -8,7 +8,7 @@
                       <div class="col-md-4">
                           <div class="card card-product" data-count="0">
                             <div class="card-header card-header-image" data-header-animation="true">
-                              <a href="{{url_for('post_single', post_id=post.post['id'])}}">
+                              <a href="{{url_for('post', post_id=post.post['id'])}}">
                                 <img class="img" src="{{post.img}}">
                               </a>
                             </div>
@@ -28,7 +28,7 @@
                                 </button>
                               </div>
                               <h4 class="card-title">
-                                <a href=" {{url_for('post_single', post_id=post.post['id'])}}">{{post.post.title}}</a>
+                                <a href=" {{url_for('post', post_id=post.post['id'])}}">{{post.post.title}}</a>
                               </h4>
                               <div class="card-description">
                                {{post.post.content|safe}}

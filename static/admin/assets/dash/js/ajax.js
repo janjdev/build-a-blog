@@ -191,7 +191,12 @@ if(actionsSelect){
         $('.thumbnail').children().remove();
     }
     function openView(url){
+
+      setTimeout(() => {
         window.open(url, '_blank');
+      }, 3000);
+
+       
     }
     function reset(el){
         el.reset;

@@ -1,46 +1,38 @@
-{% extends "site/pages/base.html" %}
+{% extends "site/componets/base.html" %}
 
 {% block content %}
 	{% include 'site/componets/post-slider.html' %}
 		<div id="colorlib-container">
 			<div class="container">
-				{% if posts%}
-				 {{counter = 0 }}
-				<div class="row row-pb-md">
-					{{% while posts %}}
-					{{container_class = 4}}
-					<div id ="{{ post.id }}" class="col-md-{{container_class}}">
-						{{% for post  in posts %}}
-						<div class="blog-entry">
-							{{% if postmeta %}}
+			{% if post %}
+				<div class="row row-pb-md">					
+					{% for p in post %}			
+					<div class="col-md-4">						
+						<div id="{{ p.post.id }}" class="blog-entry">
+							{% if  p.meta%}	
+							{% for meta in p.meta  %}
+								{% if meta.meta_key == 'attachment' %}		
 							<div class="blog-img">
-								<a href="{{'/' + post.post_type + '.html' }}"><img src="{{postmeta[post.id][0]}}" class="img-responsive" alt="html5 bootstrap template"></a>
+								<a href="{{url_for('post', post_id=p.post['id'])}}"><img src="{{meta.meta_value}}" class="img-responsive" alt="html5 bootstrap template"></a>
 							</div>
-							{{% endif %}}
+							{% endif %}	
+							{% endfor %}	
+							{% endif %}							
 							<div class="desc">
 								<p class="meta">
-									<span class="cat"><a href="#">{{post.post_type}}</a></span>
-									<span class="date">{{post.published_post.published_date.strftime('%m %d/%y')}}</span>
-									<span class="pos">By <a href="#">{{postmeta[post.id][1]}}</a></span>
+									<span class="cat postType"><a href="{{url_for('posts_type', type=p.post['post_type'])}}">{{ p.post.post_type | upper}}</a></span>
+									<span class="date">{{p.post.date_created.strftime('%d %B %Y')}}</span>
+									<span class="pos">By <a href="#">{{p.author.first_name}}</a></span>
 								</p>
-								<h2><a href="{{url_for(/post/<int:post.id>)}}">{{ post.title }}</a></h2>
-								<p>{{post.content[50]}} </p>
+								<h2><a href="{{url_for('posts_type', type=p.post['post_type'])}}">{{p.post.title|striptags}}</a></h2>
+								<p>{{p.post.content|striptags|truncate(255, False, '...', 0)}}</p>
 							</div>
 						</div>
-					</div>
-					{{counter++}}
-					{{ if divisibleby(counter, 3) }}
-				</div>
-				<div class="row row-pb-md">
-					{{counter = 0}}
-					{{if counter < 1 | container_class = 8}}
-					{{if counter  == 2}}
-				</div>		
-					
-				<!--Insert Pagination-->
-				{% if posts  %}
-					{% include  'site/componets/pagination.html'%}
-				{% endif %}
+					</div>	<!--End Post-->	
+					{% endfor %}			
+				</div>	<!--End Row-->			
+				{% endif %}				
+				
 				
 			</div><!--End Container-->
 		</div><!--End Colorlib-Container-->

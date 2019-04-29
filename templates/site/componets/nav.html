@@ -3,22 +3,19 @@
         <div class="container">
             <div class="row">
                 <div class="col-xs-2">
-                    <div id="colorlib-logo"><a href="/">Stuff</a></div>
+                    <div id="colorlib-logo"><a href="/">Build-a-Blog</a></div>
                 </div>
                 <div class="col-xs-10 text-right menu-1">
                     <ul>
                         <li class="active"><a href="/">Home</a></li>
                         <li class="has-dropdown">
-                            <a href="site/blog.html">Blog</a>
-                            <!-- <ul class="dropdown">
-                                <li><a href="single.html">Blog Single</a></li>
-                                <li><a href="#">Video</a></li>
-                                <li><a href="#">Read</a></li>
-                                <li><a href="#">Lifestyle</a></li>
-                            </ul> -->
+                            <a href="{{url_for('posts')}}">All Posts</a>
+                            <ul class="dropdown">
+                                <li><a href="{{url_for('posts_type', type='blog')}}">Blog</a></li>
+                                <li><a href="{{url_for('posts_type', type='event')}}">Events</a></li>
+                               
+                            </ul>
                         </li>
-                        <li><a href="site/event.html">Event</a></li>
-                        <li><a href="site/travel.html">Travel</a></li>
                         <li><a href="site/about.html">About Me</a></li>
                         <li><a href="site/contact.html">Contact</a></li>
                     </ul>
