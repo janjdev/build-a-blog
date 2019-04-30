@@ -24,7 +24,7 @@
 									<span class="date">{{p.post.date_created.strftime('%d %B %Y')}}</span>
 									<span class="pos">By <a href="#">{{p.author.first_name}}</a></span>
 								</p>
-								<h2><a href="{{url_for('posts_type', type=p.post['post_type'])}}">{{p.post.title|striptags}}</a></h2>
+								<h2><a href="{{url_for('post', post_id=p.post['id'])}}">{{p.post.title|striptags}}</a></h2>
 								<p>{{p.post.content|striptags|truncate(255, False, '...', 0)}}</p>
 							</div>
 						</div>

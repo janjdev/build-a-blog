@@ -1,13 +1,14 @@
 from flask import Flask, request, redirect, render_template, session, escape, url_for, flash, jsonify, json
 from flask_sqlalchemy import SQLAlchemy, Pagination
-from sqlalchemy import event, DDL
+from sqlalchemy import event, DDL, extract
 from sqlalchemy.event import listen
 from datetime import datetime
-import os, pymysql, jsonpickle, io
+import os, pymysql, jsonpickle, io, collections, calendar
 from hashutils import make_pw_hash, check_pw_hash
 from slugify import slugify
 from mimetypes import MimeTypes
 from werkzeug.utils import secure_filename
+from collections import defaultdict
 #from urllib import request
 
 
@@ -65,15 +66,65 @@ def get_uploads():
         i+=1 
     return images
 
+def get_archive():
+    p = db.session.query(Published_Post.published_date).all()
+    d = defaultdict(list)
+    for i in p:
+         d[i.published_date.year].append(i.published_date.month)
+    # create dict for archives convert month numbers to names
+    adict = {}
+    for k  in d:
+        adict['year'] = k
+        adict['months'] = list(dict.fromkeys(d.get(k)))
+    for m in range( len(adict['months'])):
+        adict['months'][m] = calendar.month_name[adict['months'][m]]
+        
+    return adict
+
+def get_tags():
+    tax = Term_Taxonomy.query.filter_by(taxonomy='tag').all()
+    tags=[]
+    for t in tax:
+        term = Term.query.filter_by(id=t.term_id).first()
+        tags.append(term.slug)
+    return tags
+
 def get_mime_type(media):
 #get media file from the form input
     url = urllib.pathname2url('media[0]')
     return MimeTypes.guess_type(url)
+    
 
 #Get Json File
 def getJSON(file):
     with io.open(file, 'r', encoding='utf-8', errors='ignore') as fp:
         return json.load(fp, strict=False)
+
+
+def recent_posts():
+    fp = Post.query.order_by(Post.date_created.desc()).limit(3).all()
+    footerPosts =[]
+    for p in fp:
+        post = {}
+        if Post_Meta.query.filter_by(post_id=p.id).all():
+           post['meta'] = Post_Meta.query.filter((Post_Meta.post_id==p.id) & (Post_Meta.meta_key=='attachment')).first().meta_value
+        post['post'] = p
+        footerPosts.append(post)
+    return footerPosts
+
+def get_post_and_postmeta(result):
+    post = []
+    for p in result:
+        postmeta = {}
+        if Post_Meta.query.filter_by(post_id=p.id).all():
+           postmeta['meta'] = Post_Meta.query.filter_by(post_id=p.id).all()
+        postmeta['author'] = Blog_User.query.filter_by(id=p.author_id).first()
+        postmeta['post'] = p
+        post.append(postmeta)
+    return post
+
+#===================================================================================================================================#
+#===================================================================================================================================#
 
 class Blog_User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -244,16 +295,19 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 # home page first 13 posts
 @app.route('/')
 def home():
-    posts = Post.query.limit(13).all()
-    post = []
-    for p in posts:
-        postmeta = {}
-        if Post_Meta.query.filter_by(post_id=p.id).all():
-           postmeta['meta'] = Post_Meta.query.filter_by(post_id=p.id).all()
-        postmeta['author'] = Blog_User.query.filter_by(id=p.author_id).first()
-        postmeta['post'] = p
-        post.append(postmeta)
-    return render_template('site/pages/index.html', title='Home', post=post)
+    tags = get_tags()    
+
+    results = Post.query.limit(13).all()
+    post = get_post_and_postmeta(results)
+     #[]
+    # for p in posts:
+    #     postmeta = {}
+    #     if Post_Meta.query.filter_by(post_id=p.id).all():
+    #        postmeta['meta'] = Post_Meta.query.filter_by(post_id=p.id).all()
+    #     postmeta['author'] = Blog_User.query.filter_by(id=p.author_id).first()
+    #     postmeta['post'] = p
+    #     post.append(postmeta)
+    return render_template('site/pages/index.html', title='Home', post=post, footerPosts=recent_posts(), archive=get_archive(), tags=tags)
 
 #Page by number
 
@@ -266,29 +320,38 @@ def homeAll(page_num):
         author_name = Blog_User.query.filter_by(id == post.author_id).first().first_name
         author_name += ' ' +Blog_User.query.filter_by(id == post.author_id).first().last_name
         postmeta.append({post.id: [img_url, author_name]})
-    return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta)
+    return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta, archive=get_archive())
 
 #post of all types 
 
 @app.route('/posts')
 def posts():
     posts = Post.query().all().paginate(per_page=13, page=1)
-    return render_template('site/pages/blog.html', title="Blog", posts=posts)
+    return render_template('site/pages/blog.html', title="Blog", posts=posts, archive=get_archive())
 
 #post by type
 
 @app.route('/posts/<type>', methods=['GET'])
 def posts_type(type):
     posts = Post.query.filter_by(post_type=type).all()
-    return render_template('site/pages/blog.html', title=type.upper(), posts=posts)
+    return render_template('site/pages/blog.html', title=type.upper(), posts=posts, archive=get_archive())
 
 #single post page by post id
 
 @app.route('/post/<int:post_id>')
-def post(post_id):
-    post = Post.query.filter_by(id=post_id).first()
-    
-    return render_template('site/pages/single.html', post=post)
+def post(post_id):    
+    result = []
+    result.append(Post.query.filter_by(id=post_id).first())
+    post = get_post_and_postmeta(result)
+
+    return render_template('site/pages/single.html', post=post, archive=get_archive(), footerPosts=recent_posts(), tags=get_tags())
+
+@app.route('/archives/<int:month>')
+def archives_byMonth(month):
+    l = Published_Post.query.filter(extract('month', Published_Post.published_date) == month).all()
+    return render_template('site/archives', l=l, title='Archives')
+
+
 
 #=============================================Auth Routes=====================================================
 @app.route('/register', methods=['POST', 'GET'])
