@@ -31,7 +31,7 @@
                                 <a href=" {{url_for('post', post_id=post.post['id'])}}">{{post.post.title}}</a>
                               </h4>
                               <div class="card-description">
-                               {{post.post.content|safe}}
+                               {{post.post.content|striptags|truncate(255, False, '...', 0)}}
                               </div>
                             </div>
                             <div class="card-footer">

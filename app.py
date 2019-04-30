@@ -453,18 +453,18 @@ def admin():
         images = get_uploads()
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
         session['current_url'] = request.url
-        #Post.query.order_by(Post.date_created.desc()).limit(3).all()
-        array = [10, 11, 13]
+        
+        array = Post.query.order_by(Post.date_created.desc()).limit(3).all()
         hposts = []
         for i in array:
-            hposts.append(Post.query.filter_by(id=i).first()) 
+            hposts.append(Post.query.filter_by(id=i.id).first()) 
         posts = []
         for p in hposts:
             post = {}
             id = p.author_id
             author = Blog_User.query.filter_by(id=id).first()
             pubDate = Published_Post.query.filter_by(post_id=p.id).first().published_date
-            img = Post_Meta.query.filter((Post_Meta.post_id == p.id) | (Post_Meta.meta_key == 'attachment')).first().meta_value
+            img = Post_Meta.query.filter((Post_Meta.post_id == p.id) & (Post_Meta.meta_key == 'attachment')).first().meta_value
             post['post'] = p
             post['author'] = author
             post['pubdate'] = pubDate
