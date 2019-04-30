@@ -512,7 +512,7 @@ def view_posts(postType):
                 posts.append(post)
             return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts), print(posts)
 
-
+#Create a new post
 @app.route('/admin/posts/blog/add_post', methods=['POST', 'GET'])
 def add_posts():
     if 'authenticated' in session:
@@ -539,6 +539,7 @@ def add_posts():
             return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active', images=images, categories=categories, bodyClass="page-post_edit")
     return redirect(url_for('login'))
 
+#Publish a new post
 @app.route('/admin/posts/blog/add_post/publish', methods=['POST', 'GET'])
 def publish_post():
     if 'authenticated' in session:
@@ -625,12 +626,10 @@ def publish_post():
                 db.session.commit()
                 return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2500, 'callback': 'openView', 'param': '/post/' + str(new_id) })
 
+#=========================================================================================================================================================
+#=========================================================================================================================================================
 
-# @app.route('/admin/posts/blog/add_post/insert_img')
-# def portfolio():
-#     images = os.listdir(app.config['SITE_UPLOADS'])
-#     return render_template('portfolio.html', images=images)
-
+#View Profile
 @app.route('/admin/profile/<int:user_id>', methods=['POST', 'GET'])
 def profile(user_id):
     if 'authenticated' in session:
@@ -640,6 +639,7 @@ def profile(user_id):
             return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'), profile_active="active")
     return redirect(url_for('login')) 
 
+#Update Profile
 @app.route('/updateProfile/<int:user_id>', methods=['POST', 'GET'])
 def updateProfile(user_id):
     if request.method == 'POST':
@@ -664,6 +664,15 @@ def updateProfile(user_id):
                 if request.form['lname'] != '':
                     update.last_name = request.form['lname']
 
+                #Get and update password
+                if request.form['pass']:
+                    pswd = request.form['pass']
+                if request.form['confirm']:
+                    confirm = request.form['confirm']
+                if pswd == confirm:
+                    newpass = make_pw_hash(confirm)
+                update.password = newpass
+
                  #Get  and update user bio
                 # if request.form['bio'] != '':
                 #     updatemeta.user_bio = request.form['bio']
@@ -684,7 +693,10 @@ def updateProfile(user_id):
                 session['user'] = user
                 return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadProfile'})
     return redirect(url_for('profile', user_id = user_id))
+#===========================================================================================================================
+#===========================================================================================================================
 
+#Update user avatar
 @app.route('/update_avatar/<int:user_id>', methods=['POST', 'GET'])
 def update_avatar(user_id):
     if request.method == 'POST':
@@ -706,7 +718,6 @@ def update_avatar(user_id):
                                 #session.add()
                         return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadAvatar'})
     return redirect(url_for('profile', user_id = user_id))
-
 
 
 

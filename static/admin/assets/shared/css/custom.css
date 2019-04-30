@@ -31,7 +31,7 @@ b{
     width: auto;
 }
 .form-btn-position .btn{
-    margin-top: calc(100% - 27px);
+    margin-top: calc(50% - 27px);
 }
 
 .navbar .collapse .navbar-nav .nav-item .nav-link{
