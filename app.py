@@ -12,7 +12,6 @@ from collections import defaultdict
 #from urllib import request
 
 
-
 app = Flask(__name__)
 app.secret_key = b'1\x19\xca0\\\xe7\x84X\xb3\x03d/tR\x14\x88'
 app.config["CACHE_TYPE"] = "null"
@@ -102,7 +101,7 @@ def getJSON(file):
 
 
 def recent_posts():
-    fp = Post.query.order_by(Post.date_created.desc()).limit(3).all()
+    fp = Post.query.filter_by(post_status='published').order_by(Post.date_created.desc()).limit(3).all()
     footerPosts =[]
     for p in fp:
         post = {}
@@ -309,8 +308,8 @@ def home():
     #     post.append(postmeta)
     return render_template('site/pages/index.html', title='Home', post=post, footerPosts=recent_posts(), archive=get_archive(), tags=tags)
 
-#Page by number
 
+#Page by number
 @app.route('/<int:page_num>')
 def homeAll(page_num):
     posts = Post.query().all().paginate(per_page=13, page=page_num, error_out=True)
@@ -322,22 +321,22 @@ def homeAll(page_num):
         postmeta.append({post.id: [img_url, author_name]})
     return render_template('site/pages/index.html', title='Home', posts=posts, postmeta=postmeta, archive=get_archive())
 
-#post of all types 
 
+#post of all types
 @app.route('/posts')
 def posts():
     posts = Post.query().all().paginate(per_page=13, page=1)
     return render_template('site/pages/blog.html', title="Blog", posts=posts, archive=get_archive())
 
-#post by type
 
+#post by type
 @app.route('/posts/<type>', methods=['GET'])
 def posts_type(type):
     posts = Post.query.filter_by(post_type=type).all()
     return render_template('site/pages/blog.html', title=type.upper(), posts=posts, archive=get_archive())
 
-#single post page by post id
 
+#single post page by post id
 @app.route('/post/<int:post_id>')
 def post(post_id):    
     result = []
@@ -454,7 +453,7 @@ def admin():
         feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
         session['current_url'] = request.url
         
-        array = Post.query.order_by(Post.date_created.desc()).limit(3).all()
+        array = Post.query.filter_by(post_status='published').order_by(Post.date_created.desc()).limit(3).all()
         hposts = []
         for i in array:
             hposts.append(Post.query.filter_by(id=i.id).first()) 
@@ -561,13 +560,14 @@ def publish_post():
                 url = '/post/' + str(new_id)
 #======================================================================
 
-            # update the post_status    
-                updatePost = Post.query.filter_by(id=new_id).first()
-                updatePost.post_status = 'published'
+            #update the post_status if it not a draft view
+                if 'draft' not in request.args or request.form['draft'] != 'draft':   
+                    updatePost = Post.query.filter_by(id=new_id).first()
+                    updatePost.post_status = 'published'
             #Add Post to published_post table
-                pubPost = Published_Post(new_id)
-                db.session.add(pubPost)
-                db.session.commit()
+                    pubPost = Published_Post(new_id)
+                    db.session.add(pubPost)
+                    db.session.commit()
 
 #=============================================================================            
             #update tags, categories, and postmeta data
@@ -624,7 +624,7 @@ def publish_post():
                     event_date = request.form['eventDate']
                     eveMeta = Post_Meta(new_id, 'event_date', event_date)
                 db.session.commit()
-                return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2500, 'callback': 'openView', 'param': '/post/' + str(new_id) })
+                return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 1500, 'callback': 'openView', 'param': '/post/' + str(new_id) })
 
 #=========================================================================================================================================================
 #=========================================================================================================================================================
@@ -718,6 +718,24 @@ def update_avatar(user_id):
                                 #session.add()
                         return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadAvatar'})
     return redirect(url_for('profile', user_id = user_id))
+
+#========================================================================================================================================
+#========================================================================================================================================
+
+#Update Post
+@app.route('/post/update')
+def update_post(post_id):
+    
+    #Update title/content
+     if 'authenticated' in session:
+        if 'user' in session:
+            if request.method == 'POST':
+                updatePost = Post.query.filter_by(id=post_id).first()
+            # create the new post
+                updatePost.title = request.form['title']
+                updatePost.content = request.form['content']
+
+
 
 
 

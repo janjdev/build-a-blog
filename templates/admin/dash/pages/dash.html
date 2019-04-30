@@ -5,7 +5,7 @@
            
                         {% if posts %}
                     {% for post in posts %}
-                      <div class="col-md-4">
+                      <div class="col-md-4 recentposts"  data-post-id="{{ post.post.id }}">
                           <div class="card card-product" data-count="0">
                             <div class="card-header card-header-image" data-header-animation="true">
                               <a href="{{url_for('post', post_id=post.post['id'])}}">
@@ -17,13 +17,13 @@
                                 <button type="button" class="btn btn-danger btn-link fix-broken-card">
                                   <i class="material-icons">build</i> Fix Header!
                                 </button>
-                                <button type="button" id="view_post" class="btn btn-default btn-link teal-lighten-2-text " rel="tooltip" data-placement="bottom" title="View post" data-original-title="View">
+                                <button type="button" id="" class="btn btn-default btn-link teal-lighten-2-text view_post" rel="tooltip" data-placement="bottom" title="View post" data-original-title="View">
                                   <i class="material-icons">art_track</i>
                                 </button>
-                                <button type="button" id="edit_post" class="btn btn-success btn-link lime-accent-4-text" rel="tooltip" data-placement="bottom" title="Edit Post" data-original-title="Edit">
+                                <button type="button" id="" class="btn btn-success btn-link lime-accent-4-text edit_post" rel="tooltip" data-placement="bottom" title="Edit Post" data-original-title="Edit">
                                   <i class="material-icons">edit</i>
                                 </button>
-                                <button type="button" id="delete_post" class="btn btn-danger btn-link red-accent-3-text" rel="tooltip" data-placement="bottom" title="Delete Post" data-original-title="Remove">
+                                <button type="button" id="" class="btn btn-danger btn-link red-accent-3-text delete_post" rel="tooltip" data-placement="bottom" title="Delete Post" data-original-title="Remove">
                                   <i class="material-icons">close</i>
                                 </button>
                               </div>
@@ -48,7 +48,6 @@
                         {% endif %}                        
                      
           </div>
-<!-- <button type="button" class="btn btn-round btn-default dropdown-toggle btn-link" data-toggle="dropdown">7 days</button> -->
           <div class="row">
             <!-- Current Status of the Site-->
               <div class="col-md-4">
@@ -73,21 +72,21 @@
                                   </th>
                                 </tr>
                                 <tr>
-                                  <td><span>{{counts.post}}</span> Posts</td>
-                                  <td><span>num of comments</span>Comments</td>
+                                  <td><span><b>{{counts.post}}</b></span> Posts</td>
+                                  <td><span><b>20</b></span> Comments</td>
                                 </tr>
                                 <tr>
-                                    <td><span>{{counts.page}}</span> Pages</td>
-                                    <td><span>num of approved comments</span>Approved</td>
+                                    <td><span><b>{{counts.page}}</b></span> Pages</td>
+                                    <td><span><b>17</b></span> Approved</td>
                                 </tr>
                                 <tr>
-                                    <td><span>{{counts.cat}}</span> Categories</td>     
-                                    <td><span>num of pending comments</span>Pending</td>
+                                    <td><span><b>{{counts.cat}}</b></span> Categories</td>     
+                                    <td><span><b>2</b></span> Pending</td>
                                 </tr>
                                 <tr>
-                                    <td><span>{{counts.tag}}<span> Tags</td>
+                                    <td><span><b>{{counts.tag}}</b><span> Tags</td>
                                         
-                                    <td></span>num of spam comments</span>Spam</td>
+                                    <td></span><b>1</b></span> Spam</td>
                                 </tr>
                               </thead>
                             </table>

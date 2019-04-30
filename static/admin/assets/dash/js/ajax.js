@@ -17,8 +17,14 @@ $(document).ready(function() {
             onClose: $(this).reset
           });
     }
-
- })    
+ });
+ 
+//Quick Post
+const quickPost = document.querySelector('quickPost');
+$(quickPost).on('submit', function(e){
+  e.preventDefault();
+  
+}) 
 
 
 //To update userProfiles    
@@ -73,6 +79,7 @@ $('#updateAvatar').on('submit', function(e){
 const pub = document.getElementById('pubPost');
 $(pub).unbind('click').click(function(e){
     e.preventDefault();
+    document.querySelector('input[name="draft"]').value='';
     const form = document.getElementById('newPostForm');
     const url = '/admin/posts/blog/add_post/publish';
    if(posts()){
@@ -81,11 +88,27 @@ $(pub).unbind('click').click(function(e){
     
 });
 
+
+
 //Saves Post as draft opens a new window to view the post draft
 const view = document.getElementById('viewPost');
 $(view).unbind('click').click(function(e){
     e.preventDefault();
-})
+    document.querySelector('input[name="draft"]').value='draft';
+    const form = document.getElementById('newPostForm');
+    const url = '/admin/posts/blog/add_post/publish';
+    if(posts()){
+      ajaxforms(url, 'POST', $(form).serialize(), false)
+      pub.setAttribute('id', 'pubStatus');
+    }
+});
+
+const pubstat = document.querySelector('pubStatus');
+if(pubstat){
+  $(pubstat).unbind('click').click(function(e){
+
+  })
+}
 
 //Post functions
 function posts(){
@@ -140,7 +163,7 @@ if(actionsSelect){
         confirmButtonText: 'Yes',
       }).then((result) =>{
             if(result.value){
-                ajax('/admin/posts/bulk_action', 'POST', data, false)
+                ajax('/admin/posts/post_actions', 'POST', data, false)
                 }
             });
         }
@@ -194,7 +217,7 @@ if(actionsSelect){
 
       setTimeout(() => {
         window.open(url, '_blank');
-      }, 3000);
+      }, 2000);
 
        
     }
