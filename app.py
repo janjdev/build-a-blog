@@ -395,7 +395,7 @@ def login():
             if email != "" and password !="":
                 user = Blog_User.query.filter_by(email=email).first()
                 if user:
-                    if check_pw_hash(password, user.password):
+                    if check_pw_hash(password, user.password) :
                         session['authenticated'] = True
                         session['id'] = user.id
                         return jsonify({'message': 'Hello ' + user.first_name, 'alertType': 'success', 'callback': 'goToAdmin', 'timer': 2000})
