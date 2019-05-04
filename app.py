@@ -121,6 +121,14 @@ def get_post_and_postmeta(result):
         postmeta['post'] = p
         post.append(postmeta)
     return post
+def get_current_user():
+    return session.get('user')['id']
+
+def get_user_avatar(id):
+    if User_Meta.query.filter((User_Meta.user_id == id) and (User_Meta.meta_key == 'avatar')).first():
+        return User_Meta.query.filter((User_Meta.user_id == id) and (User_Meta.meta_key == 'avatar')).first().meta_value
+    else:
+        return os.path.join(app.config['RELATIVE_PATH_ADMIN'], 'avatar.jpg')
 
 #===================================================================================================================================#
 #===================================================================================================================================#
@@ -146,8 +154,14 @@ class User_Meta(db.Model):
     __tablename__ = 'usermeta'
     meta_id = db.Column(db.Integer(), primary_key=True)
     user_id = db.Column(db.Integer(), db.ForeignKey('blog__user.id', ondelete='CASCADE'))
-    meta_key = db.Column(db.String(50), unique=True, nullable=False)
+    meta_key = db.Column(db.String(50), nullable=False)
     meta_value = db.Column(db.Text, nullable=False)
+
+    def __init__(self,  user_id, meta_key, meta_value):
+        self.meta_key = meta_key
+        self.meta_value = meta_value
+        self.user_id = user_id
+        
 
 class Role(db.Model):
     __tablename__ = 'roles'
@@ -297,15 +311,7 @@ def home():
     tags = get_tags()    
 
     results = Post.query.limit(13).all()
-    post = get_post_and_postmeta(results)
-     #[]
-    # for p in posts:
-    #     postmeta = {}
-    #     if Post_Meta.query.filter_by(post_id=p.id).all():
-    #        postmeta['meta'] = Post_Meta.query.filter_by(post_id=p.id).all()
-    #     postmeta['author'] = Blog_User.query.filter_by(id=p.author_id).first()
-    #     postmeta['post'] = p
-    #     post.append(postmeta)
+    post = get_post_and_postmeta(results)    
     return render_template('site/pages/index.html', title='Home', post=post, footerPosts=recent_posts(), archive=get_archive(), tags=tags)
 
 
@@ -326,14 +332,14 @@ def homeAll(page_num):
 @app.route('/posts')
 def posts():
     posts = Post.query().all().paginate(per_page=13, page=1)
-    return render_template('site/pages/blog.html', title="Blog", posts=posts, archive=get_archive())
+    return render_template('site/pages/blog.html', title="Blog", posts=posts, archive=get_archive(), footerPosts=recent_posts(), tags=get_tags())
 
 
 #post by type
 @app.route('/posts/<type>', methods=['GET'])
 def posts_type(type):
     posts = Post.query.filter_by(post_type=type).all()
-    return render_template('site/pages/blog.html', title=type.upper(), posts=posts, archive=get_archive())
+    return render_template('site/pages/blog.html', title=type.upper(), posts=posts, archive=get_archive(), footerPosts=recent_posts(), tags=get_tags())
 
 
 #single post page by post id
@@ -348,7 +354,7 @@ def post(post_id):
 @app.route('/archives/<int:month>')
 def archives_byMonth(month):
     l = Published_Post.query.filter(extract('month', Published_Post.published_date) == month).all()
-    return render_template('site/archives', l=l, title='Archives')
+    return render_template('site/archives', l=l, title='Archives', footerPosts=recent_posts(), tags=get_tags())
 
 
 
@@ -372,10 +378,11 @@ def register():
                     return jsonify({'status': 'error', 'message': 'A user with this email already exist. Please, sign in.', 'alertType': 'error', 'callback': 'goToAdmin', 'timer': 3000})
                 elif passwrd == conpass:
                     new_user = Blog_User(first_name=fname, last_name=lname, username=username, email=email, password=passwrd)
-                    db.session.add(new_user)
+                    db.session.add(new_user)                   
                     db.session.commit()
                     session['authenticated'] = True
                     session['id'] = new_user.id
+                    newAvatar = User_Meta( new_user.id, 'avatar', os.path.join(app.config['RELATIVE_PATH_ADMIN'], 'avatar.jpg'))
                     return jsonify({'status': 'success', 'message': 'You\'re in!', 'alertType': 'success', 'callback': 'goToAdmin', 'timer': 2000})
                 else:
                     return jsonify({'status': 'error', 'message': 'passwords do not match', 'alertType': 'error', 'callback': 'clearPassFields', 'timer': 3500})
@@ -430,9 +437,10 @@ def lock():
 #=====================================Log Out==============================================================================
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    session.pop('id', None)
-    session.pop('authenticated', None)
+    # session.pop('user', None)
+    # session.pop('id', None)
+    # session.pop('authenticated', None)
+    session.clear()
     return redirect(url_for('login'))
 
 
@@ -475,7 +483,7 @@ def admin():
         catCount = len(Term_Taxonomy.query.filter_by(taxonomy='category').all())
         tagCount = len(Term_Taxonomy.query.filter_by(taxonomy='tag').all())
         counts = {'post':postCount, 'page': pageCount, 'cat': catCount, 'tag': tagCount}
-        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=session.get('avatar'), dash_active="active", images=images, posts=posts, counts=counts)
+        return render_template('admin/dash/pages/dash.html', user=user, id=session.get('user')['id'], name=name, pagename='Dashboard', feed=feed, avatar=get_user_avatar(session.get('user')['id']), dash_active="active", images=images, posts=posts, counts=counts)
     return redirect(url_for('login'))
 
 #=================Dashboard Actions========================================================================
@@ -535,7 +543,7 @@ def add_posts():
                 db.session.commit()
                 id = newPost.id
                 return redirect(url_for('single_post', post_id = id))
-            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=session.get('avatar'), post_active='active', images=images, categories=categories, bodyClass="page-post_edit")
+            return render_template('admin/dash/pages/post-edit.html', user=session.get('user'), pagename='New Blog Post', parent_post='active', avatar=get_user_avatar(session.get('user')['id']), post_active='active', images=images, categories=categories, bodyClass="page-post_edit")
     return redirect(url_for('login'))
 
 #Publish a new post
@@ -636,7 +644,7 @@ def profile(user_id):
         if user_id == session.get('user')['id']:
             user = session.get('user')
             session['current_url'] = request.url
-            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=session.get('avatar'), profile_active="active")
+            return render_template('admin/dash/pages/user.html', user=user, pagename='User Profile', avatar=get_user_avatar(session.get('user')['id']), profile_active="active")
     return redirect(url_for('login')) 
 
 #Update Profile
@@ -702,7 +710,7 @@ def update_avatar(user_id):
     if request.method == 'POST':
         if 'authenticated' in session:
             if user_id == session.get('user')['id']:
-                # updatemeta = User_Meta.query.filter_by(user_id = user_id).first()
+                    updatemeta = User_Meta.query.filter((User_Meta.user_id == user_id) and (User_Meta.meta_key == 'avatar')).first()
                     if request.files:
                         avatar  = request.files['attachment']
                         if avatar.filename == '':
@@ -710,12 +718,12 @@ def update_avatar(user_id):
                         filename = secure_filename(avatar.filename)
                         avatar.save(os.path.join(app.config['ADMIN_UPLOADS'], filename))
                         session['avatar'] = os.path.join(app.config['RELATIVE_PATH_ADMIN'], filename)
-                        #if updatemeta:
-                            #updatemeta.meta_vale = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename) where meta_key == avatar
-                            #else: 
-                                #User_meta.meta_key = avatar
-                                #User_meta.meta_value == avatar.url
-                                #session.add()
+                        if updatemeta:
+                            updatemeta.meta_value = os.path.join(app.config['ADMIN_UPLOADS'], avatar.filename)
+                        else: 
+                            newMeta = User_Meta(user_id, 'avatar', session.get('avatar'))                            
+                            db.session.add(newMeta)
+                            db.session.commit()
                         return jsonify({'message': 'OK', 'alertType': 'success', 'timer': 2000, 'callback': 'loadAvatar'})
     return redirect(url_for('profile', user_id = user_id))
 
@@ -740,5 +748,5 @@ def update_post(post_id):
 
 
 if (__name__) == '__main__':
-    #db.create_all()
+    db.create_all()
     app.run()
