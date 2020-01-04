@@ -28,7 +28,7 @@
                                 </button>
                               </div>
                               <h4 class="card-title">
-                                <a href=" {{url_for('post', post_id=post.post['id'])}}">{{post.post.title}}</a>
+                                <a href=" {{url_for('post', post_id=post.post['id'])}}">{{post.post.title|striptags}}</a>
                               </h4>
                               <div class="card-description">
                                {{post.post.content|striptags|truncate(255, False, '...', 0)}}

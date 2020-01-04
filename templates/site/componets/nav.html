@@ -9,12 +9,14 @@
                     <ul>
                         <li class="active"><a href="/">Home</a></li>
                         <li class="has-dropdown">
-                            <a href="{{url_for('posts')}}">All Posts</a>
-                            <ul class="dropdown">
-                                <li><a href="{{url_for('posts_type', type='blog')}}">Blog</a></li>
-                                <li><a href="{{url_for('posts_type', type='event')}}">Events</a></li>
-                               
-                            </ul>
+                            <div class="dropdown-wrapper">
+                                <a href="{{url_for('posts')}}">All Posts</a>
+                                <ul class="dropdown">
+                                    <li><a href="{{url_for('posts_type', type='blog')}}">Blog</a></li>
+                                    <li><a href="{{url_for('posts_type', type='event')}}">Events</a></li>
+                                
+                                </ul>
+                            </div>
                         </li>
                         <li><a href="site/about.html">About Me</a></li>
                         <li><a href="site/contact.html">Contact</a></li>

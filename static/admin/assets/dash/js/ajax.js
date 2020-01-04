@@ -26,6 +26,9 @@ $(quickPost).on('submit', function(e){
   
 }) 
 
+//Get latest posts from Python foundation 
+
+
 
 //To update userProfiles    
    $('form#updateProfile').on('submit', function(e){

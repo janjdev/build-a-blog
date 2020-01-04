@@ -1,1 +1,0 @@
-/admin/posts/blog/add_post/publish'

@@ -1,6 +1,6 @@
 {% set slides = [] %}
-{% if post %}
-    {% for o in post %}
+{% if sliderposts %}
+    {% for o in sliderposts %}
         {% if o.meta %}
             {% for meta in o.meta %}
                 {% if meta.meta_key == 'slider' %}

@@ -9,7 +9,8 @@ from slugify import slugify
 from mimetypes import MimeTypes
 from werkzeug.utils import secure_filename
 from collections import defaultdict
-#from urllib import request
+from urllib.parse import urlparse
+from urllib.request import Request
 
 
 app = Flask(__name__)
@@ -90,7 +91,7 @@ def get_tags():
 
 def get_mime_type(media):
 #get media file from the form input
-    url = urllib.pathname2url('media[0]')
+    url = urlparse('media[0]')
     return MimeTypes.guess_type(url)
     
 
@@ -308,11 +309,11 @@ event.listen(Role.__table__, 'after_create', DDL(""" INSERT INTO roles (id, name
 # home page first 13 posts
 @app.route('/')
 def home():
-    tags = get_tags()    
-
+    tags = get_tags()
     results = Post.query.limit(13).all()
-    post = get_post_and_postmeta(results)    
-    return render_template('site/pages/index.html', title='Home', post=post, footerPosts=recent_posts(), archive=get_archive(), tags=tags)
+    post = get_post_and_postmeta(results)
+    sliderposts = get_post_and_postmeta(Post.query.filter_by(post_status='published').all())
+    return render_template('site/pages/index.html', title='Home', post=post, footerPosts=recent_posts(), archive=get_archive(), tags=tags, sliderposts=sliderposts)
 
 
 #Page by number
@@ -329,9 +330,10 @@ def homeAll(page_num):
 
 
 #post of all types
-@app.route('/posts')
+@app.route('/posts', methods=['GET'])
 def posts():
-    posts = Post.query().all().paginate(per_page=13, page=1)
+    posts = Post.query.all()
+    #Post.query().all() #.paginate(per_page=13, page=1)
     return render_template('site/pages/blog.html', title="Blog", posts=posts, archive=get_archive(), footerPosts=recent_posts(), tags=get_tags())
 
 
