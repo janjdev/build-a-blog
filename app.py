@@ -434,7 +434,7 @@ def lock():
             return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
     session.pop('authenticated', None)
     session['locked'] = True
-    return render_template("admin/auth/pages/lock.html", lock_active='active', user=session.get('user'), avatar=session.get('avatar'))
+    return render_template("admin/auth/pages/lock.html", lock_active='active', user=get_user_avatar(session.get('user')['id']), avatar=session.get('avatar'))
 
 #=====================================Log Out==============================================================================
 @app.route('/logout')
@@ -490,7 +490,7 @@ def admin():
 
 #=================Dashboard Actions========================================================================
 
-#Add Media to Library
+#Add Media to Library via quickAdd
 @app.route('/admin/quickAdd', methods=['POST', 'GET'])
 def quickAdd():
     if request.method == 'POST':
@@ -519,7 +519,7 @@ def view_posts(postType):
                 post['post'] = p
                 post['author'] = author                
                 posts.append(post)
-            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=session.get('avatar'), post_active='active', posts=posts), print(posts)
+            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=get_user_avatar(session.get('user')['id']), post_active='active', posts=posts), print(posts)
 
 #Create a new post
 @app.route('/admin/posts/blog/add_post', methods=['POST', 'GET'])
@@ -570,7 +570,7 @@ def publish_post():
                 url = '/post/' + str(new_id)
 #======================================================================
 
-            #update the post_status if it not a draft view
+            #update the post_status if it's not a draft view
                 if 'draft' not in request.args or request.form['draft'] != 'draft':   
                     updatePost = Post.query.filter_by(id=new_id).first()
                     updatePost.post_status = 'published'
