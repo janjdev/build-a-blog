@@ -2,7 +2,7 @@
 {% block content %}
   <!-- End Navbar -->
   <div class="wrapper wrapper-full-page">
-    <div class="page-header lock-page header-filter" style="background-image: url('../../assets/img/lock.jpg')">
+    <div class="page-header lock-page header-filter" style="background-image: url('{{url_for('static', filename='admin/assets/shared/img/lock.jpg')}}');">
       <!--   you can change the color of the filter page using: data-color="blue | green | orange | red | purple" -->
       <div class="container">
         <div class="row">
@@ -16,7 +16,7 @@
                 </div>
               </div>
               <div class="card-body ">
-                <h4 class="card-title">{{user['first_name'] + ' ' + user['last_name']}}</h4>
+                <!-- <h4 class="card-title">{{user['first_name'] + ' ' + user['last_name']}}</h4> -->
                 <form id="lockForm" method="POST" action="{{url_for('lock')}}" >
                   <div class="form-group">
                       <label for="lock" class="bmd-label-floating">Enter Password</label>

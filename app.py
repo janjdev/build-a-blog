@@ -434,7 +434,7 @@ def lock():
             return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
     session.pop('authenticated', None)
     session['locked'] = True
-    return render_template("admin/auth/pages/lock.html", lock_active='active', user=get_user_avatar(session.get('user')['id']), avatar=session.get('avatar'))
+    return render_template("admin/auth/pages/lock.html", lock_active='active', avatar=get_user_avatar(session.get('user')['id']), user=session.get('user'))
 
 #=====================================Log Out==============================================================================
 @app.route('/logout')
