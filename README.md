@@ -1,2 +1,2 @@
 # build-a-blog
-Assignment 4 of Unit 2 LC 101
+Buiding a blog CMS using Python/Flask
