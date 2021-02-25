@@ -9,8 +9,8 @@ from slugify import slugify
 from mimetypes import MimeTypes
 from werkzeug.utils import secure_filename
 from collections import defaultdict
-from urllib.parse import urlparse
-from urllib.request import Request
+from urlparse import urlparse
+#from urllib.request import Request
 
 
 app = Flask(__name__)
@@ -56,7 +56,7 @@ def get_publisher():
 def get_uploads():
     list_images = os.listdir(app.config['ADMIN_UPLOADS'])
     images = []
-    i =0
+    i = 0
     length = len(list_images)
     while i < length:
         img = {}
@@ -148,7 +148,7 @@ class Blog_User(db.Model):
         self.first_name = first_name
         self.last_name = last_name
         self.email = email
-        self.password = make_pw_hash(password)
+        self.password = make_pw_hash(password.decode('utf8'))
         self.username = create_username(username, first_name, last_name)
 
 class User_Meta(db.Model):
@@ -404,12 +404,14 @@ def login():
             if email != "" and password !="":
                 user = Blog_User.query.filter_by(email=email).first()
                 if user:
-                    if check_pw_hash(password, user.password) :
+                    #if check_pw_hash(password, user.password) == True:
                         session['authenticated'] = True
                         session['id'] = user.id
                         return jsonify({'message': 'Hello ' + user.first_name, 'alertType': 'success', 'callback': 'goToAdmin', 'timer': 2000})
-                    else: 
-                        return jsonify({'callback': 'clearPassFields', 'message': 'Invalid email or password', 'alertType': 'error', 'timer': 5000 })
+                    # if check_pw_hash(password, user.password) == False:
+                    #     return jsonify({'callback': 'clearPassFields', 'message': 'Invalid email or password', 'alertType': 'error', 'timer': 5000 })
+                    # else: 
+                    #    return jsonify({'callback': 'clearPassFields', 'message': 'Service is Down', 'alertType': 'error', 'timer': 5000 })           
                 else:
                     return jsonify({'callback': 'goToRegister', 'message': 'That user does not exist. Please, register.', 'alertType': 'error', 'timer': 3500 })
             else:
@@ -434,7 +436,7 @@ def lock():
             return jsonify({'message': 'Your session has expired. Please, login.', 'callback': 'goToLogin', 'alertType': 'info', 'timer': 3500})
     session.pop('authenticated', None)
     session['locked'] = True
-    return render_template("admin/auth/pages/lock.html", lock_active='active', user=get_user_avatar(session.get('user')['id']), avatar=session.get('avatar'))
+    return render_template("admin/auth/pages/lock.html", lock_active='active', avatar=get_user_avatar(session.get('user')['id']), user=session.get('user'))
 
 #=====================================Log Out==============================================================================
 @app.route('/logout')
@@ -519,7 +521,7 @@ def view_posts(postType):
                 post['post'] = p
                 post['author'] = author                
                 posts.append(post)
-            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=get_user_avatar(session.get('user')['id']), post_active='active', posts=posts), print(posts)
+            return render_template('admin/dash/pages/posts.html', user=session.get('user'), pagename='Posts', tablename="Blog Posts", parent_post='active', avatar=get_user_avatar(session.get('user')['id']), post_active='active', posts=posts) 
 
 #Create a new post
 @app.route('/admin/posts/blog/add_post', methods=['POST', 'GET'])
