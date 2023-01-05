@@ -9,7 +9,7 @@ from slugify import slugify
 from mimetypes import MimeTypes
 from werkzeug.utils import secure_filename
 from collections import defaultdict
-from urlparse import urlparse
+from urllib.parse import urlparse
 #from urllib.request import Request
 
 
@@ -20,9 +20,9 @@ app.config['DEBUG'] = True
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost:3306/lc1012019'
 app.config['SQLALCHEMY_ECHO'] = True
 app.config['SITE_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/site/uploads/'
-app.config['ADMIN_UPLOADS'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/static/admin/uploads/'    
+app.config['ADMIN_UPLOADS'] = 'static/admin/uploads/'    
 app.config['ALLOWED_IMAGE_EXTENSIONS'] = ['PNG', 'JPG', 'JPEG', 'SVG', 'GIF']
-app.config['DATA_FILES'] = 'D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/'
+app.config['DATA_FILES'] = 'data/'
 app.config['RELATIVE_PATH_SITE'] = '../static/site/uploads/'
 app.config['RELATIVE_PATH_ADMIN'] = '/static/admin/uploads/'
 db = SQLAlchemy(app)
@@ -97,6 +97,8 @@ def get_mime_type(media):
 
 #Get Json File
 def getJSON(file):
+    path = str(os.path.join('data'))
+    file = os.path.join(path, file)
     with io.open(file, 'r', encoding='utf-8', errors='ignore') as fp:
         return json.load(fp, strict=False)
 
@@ -462,7 +464,7 @@ def admin():
         session['user'] = user
         name = session.get('user')['first_name'] + ' ' + session.get('user')['last_name']
         images = get_uploads()
-        feed = getJSON('D:/Courses/Development/Programming/Python/LaunchCode/LC101/unit2/build-a-blog/data/data1.json').get('items',[])
+        feed = getJSON('data1.json').get('items',[])
         session['current_url'] = request.url
         
         array = Post.query.filter_by(post_status='published').order_by(Post.date_created.desc()).limit(3).all()
