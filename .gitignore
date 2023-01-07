@@ -1,6 +1,8 @@
 .vscode/
 # static/admin/uploads
 # static/site/uploads
+test.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
