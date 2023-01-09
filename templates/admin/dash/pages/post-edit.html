@@ -67,7 +67,7 @@
                                 <div class="col-md-1 tools"><a href="#" data-command='redo'  title="Redo"><i class='fas fa-redo'></i></a></div>
                                 <div class="col-md-1 tools"><a href="#" data-command='createlink'  title="Insert Link"><i class='fas fa-link'></i></a></div>
                                 <div class="col-md-1 tools">
-                                    <a href="#uploadsGallery" data-command='insertImage' data-toggle="modal" title="Insert Media"><i class='material-icons'>add_photo_alternate</i></a>
+                                    <a href="#uploadsGallery" data-command='insertImage' data-toggle="modal" title="Insert Media"><i class='modal_link material-icons'>add_photo_alternate</i></a>
                                     <!-- <div class="editorInputs"> -->
                                             <div id="uploadsGallery" class="modal fade" tabindex="-1" role="dialog"  aria-hidden="true">
                                                     <div class="modal-dialog modal-lg">
@@ -127,13 +127,15 @@
                                 <div class="col-md-1 tools"><a href="#" data-command='strikeThrough'  title="Strikethrough"><i class='material-icons'>strikethrough_s</i></a></div>
                                 <div class="col-md-1 tools"><a href="#" data-command='bold'   title="Bold"><i class='material-icons'>format_bold</i></a></div>
                             </div>   
-                        </div>                      
-                        <div id="addPostTitle"  contenteditable="true" tabindex="1" data-placeholder='Enter Your Title'></div>
-                        <input id="titlebox" name="title" type="text" value="" required hidden/>
+                        </div>
+                        {% if post_action == 'editing'  %}     {% endif %}                   
+                        <div id="addPostTitle"  contenteditable="true" tabindex="1" data-placeholder="{{post.post.title}}">{{post.post.title}}</div>
+                        <input id="titlebox" name="title" type="text" value="{{post.post.title}}" required hidden/>
+                       
                     </div>
                     <hr>
                     <div class="panel-body">
-                        <div id="contentbox" tabindex="2" contenteditable="true" data-placeholder='Enter Your Content Here'></div>
+                        <div id="contentbox" tabindex="2" contenteditable="true" data-placeholder=''>{{post.post.content|safe}}</div>
                         <textarea id="postcontent" name="content" required hidden></textarea>
                     </div>
                 </div>
@@ -157,7 +159,7 @@
                         <!--Add tags to post-->
                         <div id="newPostTags" class="bootstrap-tagsinput">
                             <span><i class="material-icons-sharp">style</i> Add Your Tags <small>or none at all...</small></span>
-                            <input type="text" name="tags" value="Ghana,Nigeria,Guinea,Senegal" class="form-control tagsinput" data-role="tagsinput" data-color="info" placeholder="Enter tags..">
+                            <input type="text" name="tags" value="{% for tag in tags %} {{tag}}, {% endfor %}" class="form-control tagsinput" data-role="tagsinput" data-color="info" placeholder="Enter tags..">
                         </div>
                         <!--Add Categories to post-->
                         <div id="newPostCat">

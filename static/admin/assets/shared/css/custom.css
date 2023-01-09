@@ -321,11 +321,15 @@ div#newPostFeature {
     margin: auto;
 }
 
-body.page-post_edit > div.modal-backdrop.fade.show{
+body.page-post-edit > div.modal-backdrop.fade.show{
     z-index: 0;
 }
 .modal-content{
     color: black;
+    height: 80vh;
+}
+.modal-body{
+    overflow-y: scroll;
 }
 /*Show/Hide contenteditable placeholder*/
 [contenteditable=true]:empty:before{

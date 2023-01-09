@@ -660,7 +660,7 @@ panelpanel-rotate.bg-rose .front {
 }
 
 .panel .panel-header {
-    z-index: 3!important
+    z-index: auto
 }
 
 .panel .panel-header .panel-title {

@@ -58,12 +58,12 @@
                           <td class="text-center">{{ post.post.date_created }}</td>
                           <td class="text-center">{{ post.post.post_status }}</td>
                           <td class="td-actions text-center">
-                                <button data-id="{{ post.id }}" type="button" id="view_post" class="btn btn-default btn-link teal-lighten-2-text " rel="tooltip" data-placement="bottom" title="View post" data-original-title="View">
+                                <a href="#" data-id="{{ post.id }}" type="button" id="view_post" class="btn btn-default btn-link teal-lighten-2-text " rel="tooltip" data-placement="bottom" title="View post" data-original-title="View">
                                         <i class="material-icons">art_track</i>
-                                      </button>
-                                      <button data-id="{{ post.id }}" type="button" id="edit_post" class="btn btn-success btn-link lime-accent-4-text" rel="tooltip" data-placement="bottom" title="Edit Post" data-original-title="Edit">
+                                </a>
+                                      <a href="{{url_for('edit_post', post_id=post.post.id)}}" data-id="{{ post.id }}" type="button" id="edit_post" class="btn btn-success btn-link lime-accent-4-text" rel="tooltip" data-placement="bottom" title="Edit Post" data-original-title="Edit">
                                         <i class="material-icons">edit</i>
-                                      </button>
+                                      </a>
                                       <button data-id="{{ post.id }}" type="button" id="delete_post" class="btn btn-danger btn-link red-accent-3-text" rel="tooltip" data-placement="bottom" title="Delete Post" data-original-title="Remove">
                                         <i class="material-icons">close</i>
                                       </button>

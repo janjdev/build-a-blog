@@ -239,8 +239,16 @@ $('.popup-youtube, .popup-vimeo, .popup-gmaps').magnificPopup({
   preloader: false,
 
   fixedContentPos: false
-}); 
+});
+
+// Set the focus to the modal when open
+$('.modal_link').click(function(){
+  document.querySelectorAll('.modal').forEach(el => {
+    el.focus();
+  });
+});
    
  });
+ 
 
 });
